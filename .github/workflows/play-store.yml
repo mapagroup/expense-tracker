@@ -1,0 +1,84 @@
+name: Publish to Google Play
+
+# Triggered automatically when release-please creates a GitHub Release,
+# OR manually via workflow_dispatch for emergency deploys.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Play Store track (internal / alpha / beta / production)'
+        required: true
+        default: internal
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+
+jobs:
+  deploy:
+    name: Upload AAB to Play Store
+    runs-on: ubuntu-latest
+    environment: play-store   # Require manual approval for production deploys
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: stable
+          cache: true
+
+      - name: Get Flutter dependencies
+        working-directory: app
+        run: flutter pub get
+
+      # ── Signing setup ─────────────────────────────────────────────────────
+      # Store the keystore as a base64-encoded GitHub secret named KEYSTORE_BASE64.
+      # Generate it locally with: base64 -i your.jks | pbcopy
+      - name: Decode keystore
+        working-directory: app
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_BASE64" | base64 --decode > android/app/keystore.jks
+
+      - name: Write key.properties
+        working-directory: app/android
+        env:
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: |
+          cat > key.properties <<EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=../android/app/keystore.jks
+          EOF
+
+      # ── Build ─────────────────────────────────────────────────────────────
+      - name: Build release AAB
+        working-directory: app
+        run: flutter build appbundle --release
+
+      # ── Upload ────────────────────────────────────────────────────────────
+      # GOOGLE_PLAY_JSON_KEY must be the full JSON content of the service account key.
+      # Create it in Play Console → Setup → API access → Service accounts.
+      - name: Upload to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_JSON_KEY }}
+          packageName: com.mapagroup.mapavault
+          releaseFiles: app/build/app/outputs/bundle/release/app-release.aab
+          track: ${{ github.event.inputs.track || 'internal' }}
+          status: completed
+          whatsNewDirectory: distribution/whatsnew

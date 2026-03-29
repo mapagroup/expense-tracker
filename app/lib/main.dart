@@ -6,6 +6,8 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'models/expense.dart';
 import 'services/database_service.dart';
 import 'screens/add_expense_screen.dart';
+import 'utils/currency.dart';
+import 'widgets/month_year_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +27,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MapaMoney',
+      title: 'Mapa Vault',
       theme: ThemeData(
         useMaterial3: true,
         primarySwatch: Colors.blue,
@@ -45,7 +47,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late Future<List<Expense>> _expensesFuture;
   DateTime _selectedMonth = DateTime.now();
-  List<Expense> _allExpenses = [];
 
   @override
   void initState() {
@@ -73,14 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _selectMonth(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showMonthYearPicker(
       context: context,
       initialDate: _selectedMonth,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-      helpText: 'Select month to filter expenses',
     );
-    if (picked != null && picked != _selectedMonth) {
+    if (picked != null) {
       setState(() {
         _selectedMonth = picked;
       });
@@ -134,26 +134,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  double _calculateTotal(List<Expense> expenses) {
-    return expenses.fold(0.0, (sum, expense) => sum + expense.amount);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MapaMoney'),
+        title: const Text('Mapa Vault'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.blue[700],
         foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.calendar_month),
-            onPressed: () => _selectMonth(context),
-            tooltip: 'Filter by month',
-          ),
-        ],
       ),
       body: FutureBuilder<List<Expense>>(
         future: _expensesFuture,
@@ -231,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.blue.withOpacity(0.1),
+                            color: Colors.blue.withValues(alpha: 0.1),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -248,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            '₹${total.toStringAsFixed(2)}',
+                            CurrencyFormatter.format(total),
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -285,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -305,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '₹${amount.toStringAsFixed(2)}',
+                              CurrencyFormatter.format(amount),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -315,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text(
                               '$percentage%',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 12,
                               ),
                             ),
@@ -367,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               leading: Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: _getCategoryColor(expense.category).withOpacity(0.2),
+                                  color: _getCategoryColor(expense.category).withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Icon(
@@ -399,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    '₹${expense.amount.toStringAsFixed(2)}',
+                                    CurrencyFormatter.format(expense.amount),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -505,7 +494,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Other':
         return Icons.category;
       default:
-        return Icons.attach_money;
+        return Icons.currency_rupee;
     }
   }
 }

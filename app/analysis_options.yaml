@@ -1,1 +1,30 @@
 include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    missing_required_param: error
+    missing_return: error
+    dead_code: warning
+    unused_import: error
+    unused_local_variable: warning
+    deprecated_member_use: warning
+  exclude:
+    - build/**
+
+linter:
+  rules:
+    # Style
+    prefer_final_fields: true
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_single_quotes: true
+    unnecessary_this: true
+    avoid_print: true
+    # Safety
+    avoid_dynamic_calls: true
+    cancel_subscriptions: true
+    close_sinks: true
+    # Readability
+    always_declare_return_types: true
+    sort_child_properties_last: true
+    use_build_context_synchronously: true

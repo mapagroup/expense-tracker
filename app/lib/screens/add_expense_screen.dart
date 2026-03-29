@@ -148,12 +148,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               TextFormField(
                 controller: _amountController,
                 decoration: InputDecoration(
-                  labelText: 'Amount',
+                  labelText: 'Amount (₹)',
                   hintText: '0.00',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  prefixIcon: const Icon(Icons.attach_money),
+                  prefixIcon: const Icon(Icons.currency_rupee),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
@@ -177,7 +177,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
               // Category Dropdown
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: InputDecoration(
                   labelText: 'Category',
                   border: OutlineInputBorder(
@@ -307,7 +307,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       case 'Other':
         return Icons.category;
       default:
-        return Icons.attach_money;
+        return Icons.currency_rupee;
     }
   }
 }
