@@ -43,8 +43,20 @@ void main() {
 
     testWidgets('displays abbreviated month names', (tester) async {
       await openPicker(tester);
-      for (final month in ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']) {
+      for (final month in [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ]) {
         expect(find.text(month), findsOneWidget);
       }
     });
@@ -63,8 +75,7 @@ void main() {
       expect(find.text('2024'), findsOneWidget);
     });
 
-    testWidgets('Cancel closes dialog without returning value',
-        (tester) async {
+    testWidgets('Cancel closes dialog without returning value', (tester) async {
       DateTime? result;
       await tester.pumpWidget(
         MaterialApp(
@@ -90,8 +101,9 @@ void main() {
       expect(result, isNull);
     });
 
-    testWidgets('Select returns DateTime on the first day of chosen month',
-        (tester) async {
+    testWidgets('Select returns DateTime on the first day of chosen month', (
+      tester,
+    ) async {
       DateTime? result;
       await tester.pumpWidget(
         MaterialApp(
@@ -120,8 +132,9 @@ void main() {
       expect(result!.day, equals(1));
     });
 
-    testWidgets('previous year button disabled at firstDate year',
-        (tester) async {
+    testWidgets('previous year button disabled at firstDate year', (
+      tester,
+    ) async {
       await openPicker(tester, initialDate: DateTime(2020, 5));
       final chevronLeft = tester.widget<IconButton>(
         find.widgetWithIcon(IconButton, Icons.chevron_left),

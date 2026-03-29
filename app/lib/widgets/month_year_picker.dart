@@ -39,9 +39,18 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
   late int _selectedMonth;
 
   static const List<String> _monthNames = [
-    'January', 'February', 'March', 'April',
-    'May', 'June', 'July', 'August',
-    'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   @override
@@ -83,30 +92,29 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                 icon: const Icon(Icons.chevron_left),
                 onPressed: _isPreviousYearAllowed()
                     ? () => setState(() {
-                          _selectedYear--;
-                          if (!_isMonthAllowed(_selectedMonth)) {
-                            _selectedMonth = 12;
-                          }
-                        })
+                        _selectedYear--;
+                        if (!_isMonthAllowed(_selectedMonth)) {
+                          _selectedMonth = 12;
+                        }
+                      })
                     : null,
                 tooltip: 'Previous year',
               ),
               Text(
                 '$_selectedYear',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: const Icon(Icons.chevron_right),
                 onPressed: _isNextYearAllowed()
                     ? () => setState(() {
-                          _selectedYear++;
-                          if (!_isMonthAllowed(_selectedMonth)) {
-                            _selectedMonth = 1;
-                          }
-                        })
+                        _selectedYear++;
+                        if (!_isMonthAllowed(_selectedMonth)) {
+                          _selectedMonth = 1;
+                        }
+                      })
                     : null,
                 tooltip: 'Next year',
               ),
@@ -135,8 +143,8 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                     foregroundColor: isSelected
                         ? colorScheme.onPrimary
                         : isAllowed
-                            ? colorScheme.onSurface
-                            : colorScheme.onSurface.withValues(alpha: 0.38),
+                        ? colorScheme.onSurface
+                        : colorScheme.onSurface.withValues(alpha: 0.38),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),

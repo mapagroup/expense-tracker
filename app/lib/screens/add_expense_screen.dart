@@ -21,7 +21,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   String _selectedCategory = 'Food';
   bool _isLoading = false;
 
-  final List<String> _categories = ['Food', 'Transport', 'Entertainment', 'Bills', 'Other'];
+  final List<String> _categories = [
+    'Food',
+    'Transport',
+    'Entertainment',
+    'Bills',
+    'Other',
+  ];
 
   @override
   void initState() {
@@ -74,7 +80,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         amount: double.parse(_amountController.text),
         date: _selectedDate,
         category: _selectedCategory,
-        description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+        description: _descriptionController.text.isEmpty
+            ? null
+            : _descriptionController.text,
       );
 
       if (widget.expense != null) {
@@ -87,15 +95,21 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.expense != null ? 'Expense updated successfully!' : 'Expense saved successfully!')),
+          SnackBar(
+            content: Text(
+              widget.expense != null
+                  ? 'Expense updated successfully!'
+                  : 'Expense saved successfully!',
+            ),
+          ),
         );
         Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     } finally {
       setState(() {
@@ -155,7 +169,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   ),
                   prefixIcon: const Icon(Icons.currency_rupee),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Please enter an amount';
@@ -190,7 +206,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     value: category,
                     child: Row(
                       children: [
-                        Icon(_getCategoryIcon(category), color: _getCategoryColor(category)),
+                        Icon(
+                          _getCategoryIcon(category),
+                          color: _getCategoryColor(category),
+                        ),
                         const SizedBox(width: 8),
                         Text(category),
                       ],
@@ -215,7 +234,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               InkWell(
                 onTap: () => _selectDate(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 12,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8),
@@ -267,7 +289,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(widget.expense != null ? 'Update Expense' : 'Save Expense'),
+                      : Text(
+                          widget.expense != null
+                              ? 'Update Expense'
+                              : 'Save Expense',
+                        ),
                 ),
               ),
             ],

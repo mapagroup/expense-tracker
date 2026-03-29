@@ -28,10 +28,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mapa Vault',
-      theme: ThemeData(
-        useMaterial3: true,
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(useMaterial3: true, primarySwatch: Colors.blue),
       home: const HomeScreen(),
     );
   }
@@ -61,14 +58,15 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Expense> _filterExpensesByMonth(List<Expense> expenses) {
     return expenses.where((expense) {
       return expense.date.year == _selectedMonth.year &&
-             expense.date.month == _selectedMonth.month;
+          expense.date.month == _selectedMonth.month;
     }).toList();
   }
 
   Map<String, double> _calculateCategoryTotals(List<Expense> expenses) {
     final categoryTotals = <String, double>{};
     for (final expense in expenses) {
-      categoryTotals[expense.category] = (categoryTotals[expense.category] ?? 0) + expense.amount;
+      categoryTotals[expense.category] =
+          (categoryTotals[expense.category] ?? 0) + expense.amount;
     }
     return categoryTotals;
   }
@@ -175,7 +173,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final allExpenses = snapshot.data ?? [];
           final filteredExpenses = _filterExpensesByMonth(allExpenses);
-          final total = filteredExpenses.fold<double>(0, (sum, expense) => sum + expense.amount);
+          final total = filteredExpenses.fold<double>(
+            0,
+            (sum, expense) => sum + expense.amount,
+          );
           final categoryTotals = _calculateCategoryTotals(filteredExpenses);
 
           return Column(
@@ -205,7 +206,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.edit_calendar, color: Colors.blue),
+                          icon: const Icon(
+                            Icons.edit_calendar,
+                            color: Colors.blue,
+                          ),
                           onPressed: () => _selectMonth(context),
                           tooltip: 'Change month',
                         ),
@@ -263,7 +267,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final category = categoryTotals.keys.elementAt(index);
                       final amount = categoryTotals[category]!;
-                      final percentage = total > 0 ? (amount / total * 100).round() : 0;
+                      final percentage = total > 0
+                          ? (amount / total * 100).round()
+                          : 0;
 
                       return Container(
                         width: 140,
@@ -356,7 +362,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               leading: Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: _getCategoryColor(expense.category).withValues(alpha: 0.2),
+                                  color: _getCategoryColor(
+                                    expense.category,
+                                  ).withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Icon(
@@ -366,14 +374,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               title: Text(
                                 expense.title,
-                                style: const TextStyle(fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     expense.category,
-                                    style: TextStyle(color: _getCategoryColor(expense.category)),
+                                    style: TextStyle(
+                                      color: _getCategoryColor(
+                                        expense.category,
+                                      ),
+                                    ),
                                   ),
                                   Text(
                                     '${expense.date.day}/${expense.date.month}/${expense.date.year}',
@@ -408,7 +422,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         value: 'edit',
                                         child: Row(
                                           children: [
-                                            Icon(Icons.edit, color: Colors.blue),
+                                            Icon(
+                                              Icons.edit,
+                                              color: Colors.blue,
+                                            ),
                                             SizedBox(width: 8),
                                             Text('Edit'),
                                           ],
@@ -418,7 +435,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         value: 'delete',
                                         child: Row(
                                           children: [
-                                            Icon(Icons.delete, color: Colors.red),
+                                            Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ),
                                             SizedBox(width: 8),
                                             Text('Delete'),
                                           ],
@@ -458,8 +478,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _getMonthName(int month) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return months[month - 1];
   }

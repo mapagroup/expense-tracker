@@ -23,16 +23,11 @@ class DatabaseService {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentsDirectory.path, 'expense_tracker.db');
 
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _createDatabase,
-    );
+    return await openDatabase(path, version: 1, onCreate: _createDatabase);
   }
 
   Future<void> _createDatabase(Database db, int version) async {
-    await db.execute(
-      '''
+    await db.execute('''
       CREATE TABLE expenses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -41,8 +36,7 @@ class DatabaseService {
         category TEXT NOT NULL,
         description TEXT
       )
-      ''',
-    );
+      ''');
   }
 
   // Insert an expense
@@ -88,10 +82,6 @@ class DatabaseService {
   // Delete an expense
   Future<int> deleteExpense(int id) async {
     final db = await database;
-    return await db.delete(
-      'expenses',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('expenses', where: 'id = ?', whereArgs: [id]);
   }
 }
