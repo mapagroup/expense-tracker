@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mapa_vault/widgets/month_year_picker.dart';
+import 'package:mapa_money/widgets/month_year_picker.dart';
 
 void main() {
   group('MonthYearPicker dialog', () {

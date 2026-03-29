@@ -6,6 +6,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'models/expense.dart';
 import 'services/database_service.dart';
 import 'screens/add_expense_screen.dart';
+import 'theme/app_theme.dart';
 import 'utils/currency.dart';
 import 'widgets/month_year_picker.dart';
 
@@ -27,8 +28,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mapa Vault',
-      theme: ThemeData(useMaterial3: true, primarySwatch: Colors.blue),
+      title: 'Mapa Money',
+      theme: AppTheme.light(),
       home: const HomeScreen(),
     );
   }
@@ -135,13 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mapa Vault'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.blue[700],
-        foregroundColor: Colors.white,
-      ),
+      appBar: AppBar(title: const Text('Mapa Money')),
       body: FutureBuilder<List<Expense>>(
         future: _expensesFuture,
         builder: (context, snapshot) {
@@ -185,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
+                  color: AppColors.primary.withValues(alpha: 0.06),
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
@@ -202,13 +197,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue,
+                            color: AppColors.primary,
                           ),
                         ),
                         IconButton(
                           icon: const Icon(
                             Icons.edit_calendar,
-                            color: Colors.blue,
+                            color: AppColors.primary,
                           ),
                           onPressed: () => _selectMonth(context),
                           tooltip: 'Change month',
@@ -224,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.blue.withValues(alpha: 0.1),
+                            color: AppColors.primary.withValues(alpha: 0.08),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -245,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.blue,
+                              color: AppColors.primary,
                             ),
                           ),
                         ],
@@ -406,7 +401,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
-                                      color: Colors.blue,
+                                      color: AppColors.expense,
                                     ),
                                   ),
                                   PopupMenuButton<String>(
@@ -424,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           children: [
                                             Icon(
                                               Icons.edit,
-                                              color: Colors.blue,
+                                              color: AppColors.primary,
                                             ),
                                             SizedBox(width: 8),
                                             Text('Edit'),
@@ -471,7 +466,6 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         icon: const Icon(Icons.add),
         label: const Text('Add Expense'),
-        backgroundColor: Colors.blue[700],
       ),
     );
   }
@@ -494,22 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return months[month - 1];
   }
 
-  Color _getCategoryColor(String category) {
-    switch (category) {
-      case 'Food':
-        return Colors.orange;
-      case 'Transport':
-        return Colors.blue;
-      case 'Entertainment':
-        return Colors.purple;
-      case 'Bills':
-        return Colors.red;
-      case 'Other':
-        return Colors.grey;
-      default:
-        return Colors.blue;
-    }
-  }
+  Color _getCategoryColor(String category) => AppColors.categoryColor(category);
 
   IconData _getCategoryIcon(String category) {
     switch (category) {

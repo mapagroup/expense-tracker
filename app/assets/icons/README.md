@@ -1,22 +1,28 @@
-# MapaMoney App Icons
+# Mapa Money App Icons
 
-## Logo Design
-**MapaMoney** - Your Personal Expense Tracker
+## Brand Colors
+- Primary: Deep Teal (#0F3D3E)
+- Accent: Copper (#C47A2C)
 
-### Color Scheme:
-- Primary: Blue (#1976D2)
-- Accent: Green (#4CAF50) for positive money actions
-- Warning: Orange (#FF9800) for expenses
-- Background: White (#FFFFFF)
+## How to add your icon
 
-### Icon Concept:
-- Wallet/Money bag with Indian Rupee symbol (₹)
-- Modern, clean design
-- Financial/banking theme
+1. Place your icon file here as **`app_icon.png`**
+   - Minimum recommended size: **1024 × 1024 px**
+   - Format: PNG with transparency supported
+   - The icon will be used for both Android and iOS
 
-## Required Files:
-- `app_icon.png` - Main app icon (512x512 recommended)
-- `app_icon_foreground.png` - Foreground icon for Android adaptive icons (432x432 recommended)
+2. Run the generator from the `app/` directory:
+   ```
+   flutter pub run flutter_launcher_icons
+   ```
+
+3. Rebuild the app — the new icon will appear on the device.
+
+## Android adaptive icon
+The adaptive icon background is pre-set to the brand teal `#0F3D3E`.
+Your foreground PNG will be centred on it. Keep the main artwork inside
+the central **66%** of the canvas (safe zone) so it isn't clipped on
+circular/squircle launchers.
 
 ## Icon Generation:
 Run the following command to generate icons from the main icon:

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/expense.dart';
 import '../services/database_service.dart';
+import '../theme/app_theme.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   final Expense? expense;
@@ -239,8 +240,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     horizontal: 12,
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.divider),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -277,17 +278,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _saveExpense,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
                   child: _isLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : Text(
                           widget.expense != null
@@ -303,22 +301,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 
-  Color _getCategoryColor(String category) {
-    switch (category) {
-      case 'Food':
-        return Colors.orange;
-      case 'Transport':
-        return Colors.blue;
-      case 'Entertainment':
-        return Colors.purple;
-      case 'Bills':
-        return Colors.red;
-      case 'Other':
-        return Colors.grey;
-      default:
-        return Colors.blue;
-    }
-  }
+  Color _getCategoryColor(String category) => AppColors.categoryColor(category);
 
   IconData _getCategoryIcon(String category) {
     switch (category) {

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mapa_vault/utils/currency.dart';
+import 'package:mapa_money/utils/currency.dart';
 
 void main() {
   group('CurrencyFormatter', () {
