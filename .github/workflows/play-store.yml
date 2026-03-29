@@ -25,7 +25,7 @@ jobs:
     environment: play-store   # Require manual approval for production deploys
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-java@v4
         with:
