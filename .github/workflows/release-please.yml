@@ -1,4 +1,4 @@
-name: Release Please
+name: Release automation
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   release-please:
-    name: Release Please
+    name: Release automation
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}

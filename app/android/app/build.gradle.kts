@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mapagroup.mapa_money"
+    namespace = "com.mapauniverse.mapa_money"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.mapagroup.mapa_money"
+        applicationId = "com.mapauniverse.mapa_money"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = 1
