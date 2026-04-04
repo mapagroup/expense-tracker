@@ -1,3 +1,3 @@
-# app
+# Mapa Money — Flutter App
 
-A new Flutter project.
+See the [project README](../README.md) for full documentation.
