@@ -45,7 +45,9 @@ class DatabaseService {
     return await db.insert(
       'expenses',
       expense.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      // Use abort so a duplicate id (should never happen with AUTOINCREMENT)
+      // raises an error rather than silently overwriting existing data.
+      conflictAlgorithm: ConflictAlgorithm.abort,
     );
   }
 

@@ -107,10 +107,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         Navigator.pop(context, true);
       }
     } catch (e) {
+      // Log full error in debug builds only; never surface internal details
+      // (file paths, stack traces) to the end user.
+      assert(() {
+        // ignore: avoid_print
+        print('[AddExpenseScreen] Save error: $e');
+        return true;
+      }());
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not save expense. Please try again.')),
+        );
       }
     } finally {
       setState(() {

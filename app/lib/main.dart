@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'models/expense.dart';
 import 'services/database_service.dart';
 import 'screens/add_expense_screen.dart';
@@ -13,6 +14,11 @@ import 'widgets/month_year_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Disable runtime font fetching: all fonts are already bundled inside the
+  // google_fonts package. This enforces fully-offline operation and ensures
+  // no network requests are made by the font layer.
+  GoogleFonts.config.allowRuntimeFetching = false;
 
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     initDatabaseFactory();
@@ -145,6 +151,13 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if (snapshot.hasError) {
+            // Log the real error in debug mode only; show a generic message to
+            // the user so internal file paths / stack traces are never exposed.
+            assert(() {
+              // ignore: avoid_print
+              print('[HomeScreen] Error loading expenses: ${snapshot.error}');
+              return true;
+            }());
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -152,13 +165,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'Error loading expenses',
+                    'Could not load expenses',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    snapshot.error.toString(),
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  const Text(
+                    'Something went wrong. Please restart the app.',
                     textAlign: TextAlign.center,
                   ),
                 ],
