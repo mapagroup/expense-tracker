@@ -16,7 +16,7 @@ AAB_OUT  := $(APP_DIR)/build/app/outputs/bundle/release
 .DEFAULT_GOAL := help
 
 .PHONY: help deps clean test test-cov lint format format-fix icons \
-        apk apk-split aab security check-all
+        apk apk-split aab run run-emulator security check-all
 
 # ── Help ──────────────────────────────────────────────────────────────────────
 help:
@@ -31,9 +31,11 @@ help:
 	@echo "  format       Check code formatting (exits non-zero if dirty)"
 	@echo "  format-fix   Auto-fix code formatting in-place"
 	@echo "  icons        Re-generate launcher icons from assets/icons/app_icon.png"
-	@echo "  apk          Build universal release APK (all ABIs, ~30 MB)"
-	@echo "  apk-split    Build per-ABI release APKs (arm64 ~15 MB, armeabi ~12 MB)"
-	@echo "  aab          Build release AAB for Play Store"
+  @echo "  apk          Build universal release APK (icons regenerated first)"
+  @echo "  apk-split    Build per-ABI release APKs (icons regenerated first)"
+  @echo "  aab          Build release AAB for Play Store (icons regenerated first)"
+  @echo "  run          Build debug APK, install on default device, and launch app"
+  @echo "  run-emulator Build debug APK, install on emulator, and launch app"
 	@echo "  security     Audit pub dependencies for known vulnerabilities"
 	@echo "  check-all    Run lint + format + test in sequence (used in CI)"
 	@echo ""
@@ -79,7 +81,9 @@ icons:
 # ── Builds ───────────────────────────────────────────────────────────────────
 
 # Universal release APK (includes all ABIs – bigger but works on any device).
-apk:
+# Icons are regenerated before every release build to keep them in sync with
+# assets/icons/app_icon.png.  Skip with: make apk SKIP_ICONS=1
+apk: $(if $(SKIP_ICONS),,icons)
 	cd $(APP_DIR) && $(FLUTTER) build apk --release
 	@echo ""
 	@echo "  APK → $(APK_OUT)/app-release.apk"
@@ -88,17 +92,29 @@ apk:
 #   arm64-v8a  : modern 64-bit phones (most common)
 #   armeabi-v7a: older 32-bit phones
 #   x86_64     : emulators / Chromebooks
-apk-split:
+apk-split: $(if $(SKIP_ICONS),,icons)
 	cd $(APP_DIR) && $(FLUTTER) build apk --release --split-per-abi
 	@echo ""
 	@echo "  APKs → $(APK_OUT)/"
 	@ls -lh $(APK_OUT)/*.apk 2>/dev/null || dir /b $(APK_OUT)\\*.apk 2>NUL
 
 # Android App Bundle for Play Store.
-aab:
+aab: $(if $(SKIP_ICONS),,icons)
 	cd $(APP_DIR) && $(FLUTTER) build appbundle --release
 	@echo ""
 	@echo "  AAB → $(AAB_OUT)/app-release.aab"
+
+# ── Run on device / emulator ──────────────────────────────────────────────────
+
+# Build a debug APK and hot-start it on whatever device is connected.
+# Use DEVICE=<id> to target a specific device: make run DEVICE=emulator-5554
+run:
+	cd $(APP_DIR) && $(FLUTTER) run $(if $(DEVICE),--device-id $(DEVICE),)
+
+# Convenience alias that explicitly targets the first available emulator
+# (device IDs matching emulator-*).  Fails fast if no emulator is running.
+run-emulator:
+	cd $(APP_DIR) && $(FLUTTER) run --device-id $(shell $(FLUTTER) devices 2>/dev/null | grep emulator | head -1 | awk '{print $$1}' || echo "emulator-5554")
 
 # ── Security ─────────────────────────────────────────────────────────────────
 # Reports outdated and vulnerable pub packages.

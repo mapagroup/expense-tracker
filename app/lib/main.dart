@@ -49,7 +49,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<Expense>> _expensesFuture;
+  List<Expense> _allExpenses = [];
+  bool _isLoading = true;
+  bool _hasError = false;
   DateTime _selectedMonth = DateTime.now();
 
   @override
@@ -58,8 +60,25 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadExpenses();
   }
 
-  void _loadExpenses() {
-    _expensesFuture = DatabaseService().getAllExpenses();
+  Future<void> _loadExpenses() async {
+    setState(() => _isLoading = true);
+    try {
+      final expenses = await DatabaseService().getAllExpenses();
+      if (mounted) {
+        setState(() {
+          _allExpenses = expenses;
+          _isLoading = false;
+          _hasError = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   List<Expense> _filterExpensesByMonth(List<Expense> expenses) {
@@ -78,17 +97,39 @@ class _HomeScreenState extends State<HomeScreen> {
     return categoryTotals;
   }
 
+  bool _canGoPreviousMonth() {
+    return !(_selectedMonth.year == 1970 && _selectedMonth.month == 1);
+  }
+
+  bool _canGoNextMonth() {
+    final now = DateTime.now();
+    return !(_selectedMonth.year == now.year &&
+        _selectedMonth.month == now.month);
+  }
+
+  void _previousMonth() {
+    setState(() {
+      _selectedMonth =
+          DateTime(_selectedMonth.year, _selectedMonth.month - 1);
+    });
+  }
+
+  void _nextMonth() {
+    setState(() {
+      _selectedMonth =
+          DateTime(_selectedMonth.year, _selectedMonth.month + 1);
+    });
+  }
+
   Future<void> _selectMonth(BuildContext context) async {
     final DateTime? picked = await showMonthYearPicker(
       context: context,
       initialDate: _selectedMonth,
-      firstDate: DateTime(2020),
+      firstDate: DateTime(1970),
       lastDate: DateTime.now(),
     );
     if (picked != null) {
-      setState(() {
-        _selectedMonth = picked;
-      });
+      setState(() => _selectedMonth = picked);
     }
   }
 
@@ -114,9 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (confirmed == true) {
       await DatabaseService().deleteExpense(expense.id!);
-      setState(() {
-        _loadExpenses();
-      });
+      await _loadExpenses();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Expense deleted successfully')),
@@ -133,9 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
     if (result == true) {
-      setState(() {
-        _loadExpenses();
-      });
+      await _loadExpenses();
     }
   }
 
@@ -143,21 +180,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Mapa Money')),
-      body: FutureBuilder<List<Expense>>(
-        future: _expensesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Builder(builder: (context) {
+          if (_isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.hasError) {
-            // Log the real error in debug mode only; show a generic message to
-            // the user so internal file paths / stack traces are never exposed.
-            assert(() {
-              // ignore: avoid_print
-              print('[HomeScreen] Error loading expenses: ${snapshot.error}');
-              return true;
-            }());
+          if (_hasError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -178,8 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-          final allExpenses = snapshot.data ?? [];
-          final filteredExpenses = _filterExpensesByMonth(allExpenses);
+          final filteredExpenses = _filterExpensesByMonth(_allExpenses);
           final total = filteredExpenses.fold<double>(
             0,
             (sum, expense) => sum + expense.amount,
@@ -204,21 +231,34 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          '${_getMonthName(_selectedMonth.month)} ${_selectedMonth.year}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        IconButton(
+                          icon: const Icon(
+                            Icons.chevron_left,
                             color: AppColors.primary,
+                          ),
+                          onPressed: _canGoPreviousMonth()
+                              ? _previousMonth
+                              : null,
+                          tooltip: 'Previous month',
+                        ),
+                        GestureDetector(
+                          onTap: () => _selectMonth(context),
+                          child: Text(
+                            '${_getMonthName(_selectedMonth.month)} ${_selectedMonth.year}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                         IconButton(
                           icon: const Icon(
-                            Icons.edit_calendar,
+                            Icons.chevron_right,
                             color: AppColors.primary,
                           ),
-                          onPressed: () => _selectMonth(context),
-                          tooltip: 'Change month',
+                          onPressed: _canGoNextMonth() ? _nextMonth : null,
+                          tooltip: 'Next month',
                         ),
                       ],
                     ),
@@ -462,8 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           );
-        },
-      ),
+        }),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final result = await Navigator.push(
@@ -471,9 +510,7 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
           );
           if (result == true) {
-            setState(() {
-              _loadExpenses();
-            });
+            await _loadExpenses();
           }
         },
         icon: const Icon(Icons.add),

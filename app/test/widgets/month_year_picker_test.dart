@@ -28,12 +28,10 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('shows dialog with title text', (tester) async {
+    testWidgets('shows dialog with month grid and year', (tester) async {
       await openPicker(tester);
-      expect(
-        find.text('Select month and year to filter expenses'),
-        findsOneWidget,
-      );
+      expect(find.text('2025'), findsOneWidget);
+      expect(find.text('Jun'), findsOneWidget);
     });
 
     testWidgets('displays the initial year', (tester) async {
@@ -171,10 +169,7 @@ void main() {
       );
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Select month and year to filter expenses'),
-        findsOneWidget,
-      );
+      expect(find.text('Cancel'), findsOneWidget);
     });
 
     testWidgets(
@@ -317,6 +312,173 @@ void main() {
         find.widgetWithText(TextButton, 'Jan'),
       );
       expect(janBtn.onPressed, isNull);
+    });
+
+    // ── Year-picker tests ────────────────────────────────────────────────────
+
+    testWidgets('tapping year text opens the year grid', (tester) async {
+      await openPicker(tester, initialDate: DateTime(2025, 6));
+      // Tap the year label to open the year picker
+      await tester.tap(find.text('2025'));
+      await tester.pumpAndSettle();
+      // Month buttons should be gone; Select button should be hidden
+      expect(find.text('Jun'), findsNothing);
+      expect(find.text('Select'), findsNothing);
+      // The year grid shows years including the selected one
+      expect(find.text('2025'), findsWidgets);
+    });
+
+    testWidgets('year grid shows firstDate and lastDate years', (tester) async {
+      await openPicker(tester, initialDate: DateTime(2025, 6));
+      await tester.tap(find.text('2025'));
+      await tester.pumpAndSettle();
+      expect(find.text('2020'), findsOneWidget);
+      expect(find.text('2026'), findsOneWidget);
+    });
+
+    testWidgets('selecting a year from grid returns to month picker',
+        (tester) async {
+      await openPicker(tester, initialDate: DateTime(2025, 6));
+      await tester.tap(find.text('2025'));
+      await tester.pumpAndSettle();
+      // Tap year 2022 in the grid
+      await tester.tap(find.text('2022'));
+      await tester.pumpAndSettle();
+      // Should be back on month picker showing 2022
+      expect(find.text('2022'), findsOneWidget);
+      expect(find.text('Jun'), findsOneWidget);
+      expect(find.text('Select'), findsOneWidget);
+    });
+
+    testWidgets('selecting year returns correct DateTime', (tester) async {
+      DateTime? result;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () async {
+                result = await showMonthYearPicker(
+                  context: context,
+                  initialDate: DateTime(2025, 6),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2026, 12),
+                );
+              },
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      // Open year picker, pick 2023
+      await tester.tap(find.text('2025'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('2023'));
+      await tester.pumpAndSettle();
+      // Now select — June is still selected and allowed
+      await tester.tap(find.text('Select'));
+      await tester.pumpAndSettle();
+      expect(result?.year, equals(2023));
+      expect(result?.month, equals(6));
+    });
+
+    testWidgets(
+        'selecting firstDate year clamps month to firstDate.month when needed',
+        (tester) async {
+      // firstDate = 2020-Aug. Start at 2025-Jan. Open year picker, pick 2020.
+      // Jan < Aug → month should clamp to Aug (firstDate.month).
+      DateTime? result;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () async {
+                result = await showMonthYearPicker(
+                  context: context,
+                  initialDate: DateTime(2025, 1),
+                  firstDate: DateTime(2020, 8),
+                  lastDate: DateTime(2026, 12),
+                );
+              },
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('2025'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('2020'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Select'));
+      await tester.pumpAndSettle();
+      expect(result?.year, equals(2020));
+      expect(result?.month, equals(8));
+    });
+
+    testWidgets(
+        'selecting non-firstDate year clamps month to 1 when needed',
+        (tester) async {
+      // lastDate = 2025-Mar. Start at 2026-Dec. Open year picker, pick 2025.
+      // Dec > Mar → month should clamp to 1. 2025 != firstDate.year.
+      DateTime? result;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () async {
+                result = await showMonthYearPicker(
+                  context: context,
+                  initialDate: DateTime(2026, 12),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2025, 3),
+                );
+              },
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('2026'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('2025'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Select'));
+      await tester.pumpAndSettle();
+      expect(result?.year, equals(2025));
+      expect(result?.month, equals(1));
+    });
+
+    testWidgets('Cancel closes dialog from year picker view', (tester) async {
+      DateTime? result;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () async {
+                result = await showMonthYearPicker(
+                  context: context,
+                  initialDate: DateTime(2025, 6),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2026, 12),
+                );
+              },
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('2025'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(result, isNull);
     });
   });
 }
