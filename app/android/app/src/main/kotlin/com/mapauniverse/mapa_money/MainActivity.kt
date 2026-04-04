@@ -1,4 +1,4 @@
-package com.mapagroup.mapa_money
+package com.mapauniverse.mapa_money
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 /// Usage:
 ///   CurrencyFormatter.format(1234.5) → '₹1,234.50'
 class CurrencyFormatter {
-  CurrencyFormatter._();
+  CurrencyFormatter._(); // coverage:ignore-line
 
   static final NumberFormat _formatter = NumberFormat.currency(
     locale: 'en_IN',

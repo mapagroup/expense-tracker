@@ -1,9 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- No INTERNET permission: app is fully offline. Fonts are bundled inside
+         the google_fonts package assets; runtime fetching is disabled in main.dart. -->
     <application
         android:label="Mapa Money"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:allowBackup="false">
+        android:allowBackup="false"
+        android:usesCleartextTraffic="false">
         <activity
             android:name=".MainActivity"
             android:exported="true"

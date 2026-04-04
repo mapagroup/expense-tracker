@@ -1,0 +1,28 @@
+# ── Windows ───────────────────────────────────────────────────────────────────
+.vs/
+Thumbs.db
+Desktop.ini
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+
+# ── Local dev-machine scripts ─────────────────────────────────────────────────
+setup_android.bat
+
+# ── Flutter / Dart build output ───────────────────────────────────────────────
+app/build/
+
+# ── Android – local machine config ────────────────────────────────────────────
+app/android/local.properties
+app/android/.gradle/
+app/android/.kotlin/
+
+# ── IDE project files ─────────────────────────────────────────────────────────
+*.iml
+app/app.iml
+app/android/app_android.iml
+
+# ── Dart tool cache ───────────────────────────────────────────────────────────
+app/.dart_tool/
+app/.flutter-plugins-dependencies
+app/.flutter-plugins

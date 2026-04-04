@@ -2,21 +2,26 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'models/expense.dart';
 import 'services/database_service.dart';
 import 'screens/add_expense_screen.dart';
 import 'theme/app_theme.dart';
 import 'utils/currency.dart';
+import 'utils/db_init_stub.dart'
+    if (dart.library.io) 'utils/db_init_desktop.dart';
 import 'widgets/month_year_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Only initialize ffi on desktop platforms; mobile uses the default sqflite engine.
+  // Disable runtime font fetching: all fonts are already bundled inside the
+  // google_fonts package. This enforces fully-offline operation and ensures
+  // no network requests are made by the font layer.
+  GoogleFonts.config.allowRuntimeFetching = false;
+
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
+    initDatabaseFactory();
   }
 
   runApp(const MainApp());
@@ -29,6 +34,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mapa Money',
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       home: const HomeScreen(),
     );
@@ -43,7 +49,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<Expense>> _expensesFuture;
+  List<Expense> _allExpenses = [];
+  bool _isLoading = true;
+  bool _hasError = false;
   DateTime _selectedMonth = DateTime.now();
 
   @override
@@ -52,8 +60,25 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadExpenses();
   }
 
-  void _loadExpenses() {
-    _expensesFuture = DatabaseService().getAllExpenses();
+  Future<void> _loadExpenses() async {
+    setState(() => _isLoading = true);
+    try {
+      final expenses = await DatabaseService().getAllExpenses();
+      if (mounted) {
+        setState(() {
+          _allExpenses = expenses;
+          _isLoading = false;
+          _hasError = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   List<Expense> _filterExpensesByMonth(List<Expense> expenses) {
@@ -72,17 +97,37 @@ class _HomeScreenState extends State<HomeScreen> {
     return categoryTotals;
   }
 
+  bool _canGoPreviousMonth() {
+    return !(_selectedMonth.year == 1970 && _selectedMonth.month == 1);
+  }
+
+  bool _canGoNextMonth() {
+    final now = DateTime.now();
+    return !(_selectedMonth.year == now.year &&
+        _selectedMonth.month == now.month);
+  }
+
+  void _previousMonth() {
+    setState(() {
+      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month - 1);
+    });
+  }
+
+  void _nextMonth() {
+    setState(() {
+      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1);
+    });
+  }
+
   Future<void> _selectMonth(BuildContext context) async {
     final DateTime? picked = await showMonthYearPicker(
       context: context,
       initialDate: _selectedMonth,
-      firstDate: DateTime(2020),
+      firstDate: DateTime(1970),
       lastDate: DateTime.now(),
     );
     if (picked != null) {
-      setState(() {
-        _selectedMonth = picked;
-      });
+      setState(() => _selectedMonth = picked);
     }
   }
 
@@ -108,9 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (confirmed == true) {
       await DatabaseService().deleteExpense(expense.id!);
-      setState(() {
-        _loadExpenses();
-      });
+      await _loadExpenses();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Expense deleted successfully')),
@@ -127,9 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
     if (result == true) {
-      setState(() {
-        _loadExpenses();
-      });
+      await _loadExpenses();
     }
   }
 
@@ -137,14 +178,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Mapa Money')),
-      body: FutureBuilder<List<Expense>>(
-        future: _expensesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Builder(
+        builder: (context) {
+          if (_isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.hasError) {
+          if (_hasError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -152,13 +192,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'Error loading expenses',
+                    'Could not load expenses',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    snapshot.error.toString(),
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  const Text(
+                    'Something went wrong. Please restart the app.',
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -166,8 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-          final allExpenses = snapshot.data ?? [];
-          final filteredExpenses = _filterExpensesByMonth(allExpenses);
+          final filteredExpenses = _filterExpensesByMonth(_allExpenses);
           final total = filteredExpenses.fold<double>(
             0,
             (sum, expense) => sum + expense.amount,
@@ -192,21 +230,34 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          '${_getMonthName(_selectedMonth.month)} ${_selectedMonth.year}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        IconButton(
+                          icon: const Icon(
+                            Icons.chevron_left,
                             color: AppColors.primary,
+                          ),
+                          onPressed: _canGoPreviousMonth()
+                              ? _previousMonth
+                              : null,
+                          tooltip: 'Previous month',
+                        ),
+                        GestureDetector(
+                          onTap: () => _selectMonth(context),
+                          child: Text(
+                            '${_getMonthName(_selectedMonth.month)} ${_selectedMonth.year}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                         IconButton(
                           icon: const Icon(
-                            Icons.edit_calendar,
+                            Icons.chevron_right,
                             color: AppColors.primary,
                           ),
-                          onPressed: () => _selectMonth(context),
-                          tooltip: 'Change month',
+                          onPressed: _canGoNextMonth() ? _nextMonth : null,
+                          tooltip: 'Next month',
                         ),
                       ],
                     ),
@@ -459,9 +510,7 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
           );
           if (result == true) {
-            setState(() {
-              _loadExpenses();
-            });
+            await _loadExpenses();
           }
         },
         icon: const Icon(Icons.add),

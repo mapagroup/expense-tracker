@@ -1,4 +1,4 @@
-name: Release Please
+name: Release automation
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   release-please:
-    name: Release Please
+    name: Release automation
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -25,9 +25,9 @@ jobs:
           manifest-file: .release-please-manifest.json
           config-file: release-please-config.json
 
-  # After a real release is created, build the release AAB
-  build-release-aab:
-    name: Build Release AAB
+  # After a real release is created, build the release APKs + AAB
+  build-release-artifacts:
+    name: Build Release Artifacts
     runs-on: ubuntu-latest
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created }}
@@ -59,6 +59,16 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > android/app/keystore.jks
 
+      # Build per-ABI split APKs (arm64-v8a, armeabi-v7a, x86_64)
+      # Each is ~15–20 MB instead of a fat ~60 MB universal APK.
+      - name: Build release APKs (split per ABI)
+        env:
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: flutter build apk --release --split-per-abi
+
+      # Build AAB for Play Store
       - name: Build release AAB
         env:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -66,8 +76,14 @@ jobs:
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
         run: flutter build appbundle --release
 
-      - name: Upload AAB to GitHub Release
+      # Attach all APKs + AAB to the GitHub Release so users can
+      # download and sideload the correct APK for their device.
+      - name: Upload artifacts to GitHub Release
         uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2
         with:
           tag_name: ${{ needs.release-please.outputs.tag_name }}
-          files: app/build/app/outputs/bundle/release/app-release.aab
+          files: |
+            app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            app/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            app/build/app/outputs/flutter-apk/app-x86_64-release.apk
+            app/build/app/outputs/bundle/release/app-release.aab
