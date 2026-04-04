@@ -118,10 +118,9 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                 setState(() {
                   _selectedYear = year;
                   if (!_isMonthAllowed(_selectedMonth)) {
-                    _selectedMonth =
-                        year == widget.firstDate.year
-                            ? widget.firstDate.month
-                            : 1;
+                    _selectedMonth = year == widget.firstDate.year
+                        ? widget.firstDate.month
+                        : 1;
                   }
                   _showingYearPicker = false;
                 });

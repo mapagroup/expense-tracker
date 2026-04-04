@@ -68,10 +68,8 @@ String _pctColor(int hit, int found) {
   return '#c62828'; // red
 }
 
-String _escapeHtml(String s) => s
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;');
+String _escapeHtml(String s) =>
+    s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
 String buildHtml(List<FileCoverage> files) {
   final totalFound = files.fold(0, (s, f) => s + f.linesFound);
@@ -167,7 +165,9 @@ String buildHtml(List<FileCoverage> files) {
         );
       }
     } else {
-      sb.writeln('<div class="line instr"><span class="code">(source not found)</span></div>');
+      sb.writeln(
+        '<div class="line instr"><span class="code">(source not found)</span></div>',
+      );
     }
 
     sb.writeln('</div></div>');
@@ -205,7 +205,9 @@ void main() {
   for (final f in files..sort((a, b) => a.path.compareTo(b.path))) {
     final pct = _pct(f.linesHit, f.linesFound);
     final label = '  ${f.path}'.padRight(46);
-    stdout.writeln('$label ${f.linesHit.toString().padLeft(3)}/${f.linesFound}  $pct%');
+    stdout.writeln(
+      '$label ${f.linesHit.toString().padLeft(3)}/${f.linesFound}  $pct%',
+    );
     if (f.missedLines.isNotEmpty) {
       stdout.writeln('    Missed lines: ${f.missedLines.join(', ')}');
     }
@@ -214,7 +216,9 @@ void main() {
   stdout.writeln('─' * 62);
   final totalPct = _pct(totalHit, totalFound);
   final totalHitStr = totalHit.toString().padLeft(3);
-  stdout.writeln('  ${'TOTAL'.padRight(44)} $totalHitStr/$totalFound  $totalPct%');
+  stdout.writeln(
+    '  ${'TOTAL'.padRight(44)} $totalHitStr/$totalFound  $totalPct%',
+  );
   stdout.writeln('');
 
   // ── HTML report ───────────────────────────────────────────────────────────
@@ -232,4 +236,3 @@ void main() {
   }
   stdout.writeln('PASS: 100% line coverage.');
 }
-

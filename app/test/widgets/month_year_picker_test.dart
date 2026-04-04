@@ -208,41 +208,40 @@ void main() {
       },
     );
 
-    testWidgets(
-      'navigating to next year clamps month to January when needed',
-      (tester) async {
-        // Covers the `_selectedMonth = 1` branch (line 115).
-        // Setup: lastDate = 2025-Mar, so Dec is not allowed in 2025.
-        // Start at 2024-Dec, navigate right → 2025, Dec > Mar → clamp to Jan.
-        DateTime? result;
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Builder(
-              builder: (context) => ElevatedButton(
-                onPressed: () async {
-                  result = await showMonthYearPicker(
-                    context: context,
-                    initialDate: DateTime(2024, 12),
-                    firstDate: DateTime(2024, 1),
-                    lastDate: DateTime(2025, 3),
-                  );
-                },
-                child: const Text('Open'),
-              ),
+    testWidgets('navigating to next year clamps month to January when needed', (
+      tester,
+    ) async {
+      // Covers the `_selectedMonth = 1` branch (line 115).
+      // Setup: lastDate = 2025-Mar, so Dec is not allowed in 2025.
+      // Start at 2024-Dec, navigate right → 2025, Dec > Mar → clamp to Jan.
+      DateTime? result;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () async {
+                result = await showMonthYearPicker(
+                  context: context,
+                  initialDate: DateTime(2024, 12),
+                  firstDate: DateTime(2024, 1),
+                  lastDate: DateTime(2025, 3),
+                );
+              },
+              child: const Text('Open'),
             ),
           ),
-        );
-        await tester.tap(find.text('Open'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.byIcon(Icons.chevron_right));
-        await tester.pumpAndSettle();
-        expect(find.text('2025'), findsOneWidget);
-        await tester.tap(find.text('Select'));
-        await tester.pumpAndSettle();
-        expect(result!.month, equals(1));
-        expect(result!.year, equals(2025));
-      },
-    );
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pumpAndSettle();
+      expect(find.text('2025'), findsOneWidget);
+      await tester.tap(find.text('Select'));
+      await tester.pumpAndSettle();
+      expect(result!.month, equals(1));
+      expect(result!.year, equals(2025));
+    });
 
     testWidgets('tapping a month button changes the selection', (tester) async {
       // Covers the onPressed lambda (line 137) — setState that updates _selectedMonth.
@@ -336,8 +335,9 @@ void main() {
       expect(find.text('2026'), findsOneWidget);
     });
 
-    testWidgets('selecting a year from grid returns to month picker',
-        (tester) async {
+    testWidgets('selecting a year from grid returns to month picker', (
+      tester,
+    ) async {
       await openPicker(tester, initialDate: DateTime(2025, 6));
       await tester.tap(find.text('2025'));
       await tester.pumpAndSettle();
@@ -384,43 +384,44 @@ void main() {
     });
 
     testWidgets(
-        'selecting firstDate year clamps month to firstDate.month when needed',
-        (tester) async {
-      // firstDate = 2020-Aug. Start at 2025-Jan. Open year picker, pick 2020.
-      // Jan < Aug → month should clamp to Aug (firstDate.month).
-      DateTime? result;
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () async {
-                result = await showMonthYearPicker(
-                  context: context,
-                  initialDate: DateTime(2025, 1),
-                  firstDate: DateTime(2020, 8),
-                  lastDate: DateTime(2026, 12),
-                );
-              },
-              child: const Text('Open'),
+      'selecting firstDate year clamps month to firstDate.month when needed',
+      (tester) async {
+        // firstDate = 2020-Aug. Start at 2025-Jan. Open year picker, pick 2020.
+        // Jan < Aug → month should clamp to Aug (firstDate.month).
+        DateTime? result;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () async {
+                  result = await showMonthYearPicker(
+                    context: context,
+                    initialDate: DateTime(2025, 1),
+                    firstDate: DateTime(2020, 8),
+                    lastDate: DateTime(2026, 12),
+                  );
+                },
+                child: const Text('Open'),
+              ),
             ),
           ),
-        ),
-      );
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('2025'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('2020'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Select'));
-      await tester.pumpAndSettle();
-      expect(result?.year, equals(2020));
-      expect(result?.month, equals(8));
-    });
+        );
+        await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('2025'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('2020'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Select'));
+        await tester.pumpAndSettle();
+        expect(result?.year, equals(2020));
+        expect(result?.month, equals(8));
+      },
+    );
 
-    testWidgets(
-        'selecting non-firstDate year clamps month to 1 when needed',
-        (tester) async {
+    testWidgets('selecting non-firstDate year clamps month to 1 when needed', (
+      tester,
+    ) async {
       // lastDate = 2025-Mar. Start at 2026-Dec. Open year picker, pick 2025.
       // Dec > Mar → month should clamp to 1. 2025 != firstDate.year.
       DateTime? result;

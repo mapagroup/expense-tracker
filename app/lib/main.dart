@@ -109,15 +109,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _previousMonth() {
     setState(() {
-      _selectedMonth =
-          DateTime(_selectedMonth.year, _selectedMonth.month - 1);
+      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month - 1);
     });
   }
 
   void _nextMonth() {
     setState(() {
-      _selectedMonth =
-          DateTime(_selectedMonth.year, _selectedMonth.month + 1);
+      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1);
     });
   }
 
@@ -180,7 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Mapa Money')),
-      body: Builder(builder: (context) {
+      body: Builder(
+        builder: (context) {
           if (_isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -502,7 +501,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           );
-        }),
+        },
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final result = await Navigator.push(
