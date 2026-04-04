@@ -116,7 +116,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       }());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not save expense. Please try again.')),
+          const SnackBar(
+            content: Text('Could not save expense. Please try again.'),
+          ),
         );
       }
     } finally {

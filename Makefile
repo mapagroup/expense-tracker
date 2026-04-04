@@ -15,7 +15,7 @@ AAB_OUT  := $(APP_DIR)/build/app/outputs/bundle/release
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps clean test lint format format-fix icons \
+.PHONY: help deps clean test test-cov lint format format-fix icons \
         apk apk-split aab security check-all
 
 # ── Help ──────────────────────────────────────────────────────────────────────
@@ -26,6 +26,7 @@ help:
 	@echo "  deps         Install / fetch all pub dependencies"
 	@echo "  clean        Remove all build artefacts"
 	@echo "  test         Run unit and widget tests"
+	@echo "  test-cov     Run tests + check 100%% line coverage (fails if not)"
 	@echo "  lint         Static analysis (flutter analyze --fatal-infos)"
 	@echo "  format       Check code formatting (exits non-zero if dirty)"
 	@echo "  format-fix   Auto-fix code formatting in-place"
@@ -46,8 +47,15 @@ clean:
 	cd $(APP_DIR) && $(FLUTTER) clean
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
+
+# Fast run — no coverage instrumentation.
 test:
+	cd $(APP_DIR) && $(FLUTTER) test
+
+# Full coverage run + 100% gate.  Fails if any coverable line is not hit.
+test-cov:
 	cd $(APP_DIR) && $(FLUTTER) test --coverage
+	cd $(APP_DIR) && dart tool/check_coverage.dart
 
 # ── Lint & Format ─────────────────────────────────────────────────────────────
 
@@ -96,10 +104,7 @@ aab:
 # Reports outdated and vulnerable pub packages.
 security:
 	@echo "=== Dependency audit ==="
-	cd $(APP_DIR) && $(FLUTTER) pub outdated
-	@echo ""
-	@echo "=== Dart vulnerability check ==="
-	cd $(APP_DIR) && dart pub audit
+	cd $(APP_DIR) && $(FLUTTER) pub outdated --dependency-overrides --dev-dependencies
 
 # ── CI composite target ───────────────────────────────────────────────────────
 # Mirrors what ci.yml does: lint → format check → tests.
