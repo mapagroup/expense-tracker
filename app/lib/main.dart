@@ -2,21 +2,20 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'models/expense.dart';
 import 'services/database_service.dart';
 import 'screens/add_expense_screen.dart';
 import 'theme/app_theme.dart';
 import 'utils/currency.dart';
+import 'utils/db_init_stub.dart'
+    if (dart.library.io) 'utils/db_init_desktop.dart';
 import 'widgets/month_year_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Only initialize ffi on desktop platforms; mobile uses the default sqflite engine.
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
+    initDatabaseFactory();
   }
 
   runApp(const MainApp());
@@ -29,6 +28,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mapa Money',
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       home: const HomeScreen(),
     );
