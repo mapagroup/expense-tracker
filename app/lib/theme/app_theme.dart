@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// Brand colour palette for Mapa Money.
 class AppColors {
-  const AppColors._();
+  const AppColors._(); // coverage:ignore-line
 
   // ── Core brand ─────────────────────────────────────────────────
   static const Color primary = Color(0xFF0F3D3E); // deep teal
@@ -47,7 +47,7 @@ class AppColors {
 
 /// Central theme definition for Mapa Money.
 class AppTheme {
-  const AppTheme._();
+  const AppTheme._(); // coverage:ignore-line
 
   static ThemeData light() {
     final colorScheme = ColorScheme.fromSeed(

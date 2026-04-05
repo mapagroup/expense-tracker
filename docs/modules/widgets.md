@@ -4,6 +4,43 @@ Reusable UI components that are not tied to any specific screen.
 
 ---
 
+## `app_drawer.dart` — Application Navigation Drawer
+
+### Purpose
+A reusable `NavigationDrawer`-backed side drawer that provides access to app-level destinations (e.g. Preferences). It is injected into `HomeScreen`'s `Scaffold.drawer`; Flutter's `Scaffold` automatically adds the hamburger `DrawerButton` to the `AppBar` when a drawer is present.
+
+### Public API
+
+```dart
+class AppDrawer extends StatelessWidget {
+  const AppDrawer({super.key});
+}
+```
+
+### Structure
+
+The drawer contains two sections:
+
+**1. Header (`DrawerHeader`)**
+Displays the app icon (`assets/icons/app_icon.png`, decoded at `(48 × devicePixelRatio)` physical pixels via `cacheWidth`/`cacheHeight` to avoid blurriness on high-DPI screens while keeping the displayed size at 48 logical pixels) and the app name/tagline. The background uses `AppColors.primary`; text colours derive from `Theme.of(context).colorScheme.onPrimary`.
+
+**2. Navigation entries**
+| Entry | Icon | Destination |
+|---|---|---|
+| Preferences | `Icons.settings_outlined` | `PreferencesScreen` |
+
+Navigation is handled by capturing the `NavigatorState` before popping the drawer, then pushing the destination via `Future.microtask` to avoid using a deactivated context.
+
+### Tests
+`test/widgets/home_screen_drawer_test.dart` (group `AppDrawer`) tests:
+- Hamburger button opens the drawer
+- Drawer title and subtitle text are displayed
+- Preferences tile is visible inside the drawer
+- Tapping Preferences navigates to `PreferencesScreen`
+- Tapping outside the drawer closes it
+
+---
+
 ## `month_year_picker.dart` — Month & Year Picker Dialog
 
 ### Purpose

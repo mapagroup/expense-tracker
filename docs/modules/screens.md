@@ -1,6 +1,6 @@
 # Module: Screens
 
-This app has two screens: **HomeScreen** (in `lib/main.dart`) and **AddExpenseScreen** (in `lib/screens/add_expense_screen.dart`).
+This app has three screens: **HomeScreen** (in `lib/main.dart`), **AddExpenseScreen** (`lib/screens/add_expense_screen.dart`), and **PreferencesScreen** (`lib/screens/preferences_screen.dart`).
 
 ---
 
@@ -12,16 +12,19 @@ The main screen the user sees on launch. Shows:
 - A per-category spending breakdown with percentages
 - A scrollable list of expense tiles for that month
 - A FAB (floating action button) to add a new expense
+- A hamburger icon (☰) in the AppBar that opens a side drawer
 
-### Why it lives in `main.dart`
-It is the only screen that exists at app startup. Keeping the entry point and home screen together reduces the number of files for a simple app. If the app grows (e.g. adds a settings screen), `HomeScreen` should be moved to `screens/home_screen.dart`.
+### Navigation
+The screen exposes app-level navigation through the side drawer (`AppDrawer`). From here, the user can open `PreferencesScreen`. See [`docs/modules/widgets.md`](widgets.md) for the `AppDrawer` widget documentation.
 
 ### State management
 Uses plain `StatefulWidget` + `setState`. The state consists of:
-- `_expensesFuture` — the `Future` returned by `DatabaseService().getAllExpenses()`
+- `_allExpenses` — `List<Expense>` loaded from the database
+- `_isLoading` — `bool` flag shown while the DB query is in-flight
+- `_hasError` — `bool` flag set when the DB query fails; triggers an error UI instead of the expense list
 - `_selectedMonth` — the month currently being filtered
 
-There is no global state or state management library. When data changes (add/edit/delete), the future is simply replaced with a fresh DB query and `setState` triggers a rebuild.
+There is no global state or state management library. When data changes (add/edit/delete), `_loadExpenses()` is called, which sets `_isLoading = true` and `_hasError = false`, awaits `DatabaseService().getAllExpenses()`, then calls `setState` with the fresh list (or sets `_hasError = true` on failure).
 
 ### Month filtering
 Filtering is done **in-memory** after loading all expenses:
@@ -84,3 +87,13 @@ void dispose() {
   super.dispose();
 }
 ```
+
+---
+
+## PreferencesScreen (`lib/screens/preferences_screen.dart`)
+
+### What it does
+A placeholder screen reached via the navigation drawer. Currently shows a "Settings will appear here" message. It is a `StatelessWidget` with a standard `AppBar` and centred body.
+
+New app-level preferences (e.g. currency symbol, theme mode) should be added to this screen.
+

@@ -10,6 +10,7 @@ import 'theme/app_theme.dart';
 import 'utils/currency.dart';
 import 'utils/db_init_stub.dart'
     if (dart.library.io) 'utils/db_init_desktop.dart';
+import 'widgets/app_drawer.dart';
 import 'widgets/month_year_picker.dart';
 
 void main() async {
@@ -36,8 +37,26 @@ class MainApp extends StatelessWidget {
       title: 'Mapa Money',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      scrollBehavior: const _NoStretchScrollBehavior(),
       home: const HomeScreen(),
     );
+  }
+}
+
+/// Disables all overscroll indicators (both the Material 3
+/// [StretchingOverscrollIndicator] and the legacy [GlowingOverscrollIndicator])
+/// on all scrollable widgets by returning [child] unchanged from
+/// [buildOverscrollIndicator].
+class _NoStretchScrollBehavior extends MaterialScrollBehavior {
+  const _NoStretchScrollBehavior();
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return child;
   }
 }
 
@@ -61,7 +80,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadExpenses() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       final expenses = await DatabaseService().getAllExpenses();
       if (mounted) {
@@ -178,6 +200,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Mapa Money')),
+      drawer: const AppDrawer(),
+
       body: Builder(
         builder: (context) {
           if (_isLoading) {
