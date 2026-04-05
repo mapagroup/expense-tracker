@@ -43,9 +43,10 @@ class MainApp extends StatelessWidget {
   }
 }
 
-/// Disables the Material 3 stretch-overscroll indicator on all scrollable
-/// widgets. The default [MaterialScrollBehavior] on Android API 31+ renders
-/// a [StretchingOverscrollIndicator] that zooms content at list boundaries.
+/// Disables all overscroll indicators (both the Material 3
+/// [StretchingOverscrollIndicator] and the legacy [GlowingOverscrollIndicator])
+/// on all scrollable widgets by returning [child] unchanged from
+/// [buildOverscrollIndicator].
 class _NoStretchScrollBehavior extends MaterialScrollBehavior {
   const _NoStretchScrollBehavior();
 

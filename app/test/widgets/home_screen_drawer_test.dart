@@ -72,7 +72,7 @@ void main() {
       scaffold.closeDrawer();
       await tester.pumpAndSettle();
 
-      expect(find.byType(AppDrawer), findsNothing);
+      expect(scaffold.isDrawerOpen, isFalse);
     });
   });
 }

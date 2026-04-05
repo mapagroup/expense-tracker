@@ -21,9 +21,10 @@ The screen exposes app-level navigation through the side drawer (`AppDrawer`). F
 Uses plain `StatefulWidget` + `setState`. The state consists of:
 - `_allExpenses` — `List<Expense>` loaded from the database
 - `_isLoading` — `bool` flag shown while the DB query is in-flight
+- `_hasError` — `bool` flag set when the DB query fails; triggers an error UI instead of the expense list
 - `_selectedMonth` — the month currently being filtered
 
-There is no global state or state management library. When data changes (add/edit/delete), `_loadExpenses()` is called, which sets `_isLoading = true`, awaits `DatabaseService().getAllExpenses()`, then calls `setState` with the fresh list.
+There is no global state or state management library. When data changes (add/edit/delete), `_loadExpenses()` is called, which sets `_isLoading = true` and `_hasError = false`, awaits `DatabaseService().getAllExpenses()`, then calls `setState` with the fresh list (or sets `_hasError = true` on failure).
 
 ### Month filtering
 Filtering is done **in-memory** after loading all expenses:
