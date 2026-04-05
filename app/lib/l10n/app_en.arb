@@ -1,0 +1,72 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Mapa Money",
+  "appTagline": "Your offline expense tracker",
+
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "ok": "OK",
+  "save": "Save",
+  "saving": "Saving",
+  "select": "Select",
+
+  "preferences": "Preferences",
+  "prefSectionDisplay": "Display",
+  "prefSectionRegional": "Regional",
+  "prefSectionDataEntry": "Data Entry",
+  "prefTheme": "Theme",
+  "prefThemeDefault": "Default",
+  "prefThemeDark": "Dark",
+  "prefDecimalPlaces": "Decimal Places",
+  "prefCurrency": "Currency",
+  "prefLanguage": "Language",
+  "prefDataEntryEmpty": "No data entry preferences yet.",
+  "searchCurrencies": "Search currencies\u2026",
+
+  "homeTotal": "Total Expenses",
+  "homeAddExpense": "Add Expense",
+  "homeNoExpensesForMonth": "No expenses for {month}",
+  "@homeNoExpensesForMonth": {
+    "placeholders": {
+      "month": {"type": "String"}
+    }
+  },
+  "homeTapToAdd": "Tap the + button to add your first expense",
+  "homeLoadError": "Could not load expenses",
+  "homeLoadErrorBody": "Something went wrong. Please restart the app.",
+  "homePreviousMonth": "Previous month",
+  "homeNextMonth": "Next month",
+  "homeDeleteTitle": "Delete Expense",
+  "homeDeleteBody": "Are you sure you want to delete \"{title}\"?",
+  "@homeDeleteBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "homeDeleteSuccess": "Expense deleted successfully",
+
+  "addExpenseTitle": "Add Expense",
+  "editExpenseTitle": "Edit Expense",
+  "fieldExpenseTitle": "Expense Title",
+  "fieldExpenseTitleHint": "e.g., Lunch at restaurant",
+  "fieldAmountLabel": "Amount",
+  "fieldAmountHint": "0.00",
+  "fieldCategory": "Category",
+  "fieldDescription": "Description (Optional)",
+  "fieldDescriptionHint": "Add any additional notes\u2026",
+
+  "validTitleRequired": "Please enter an expense title",
+  "validTitleTooShort": "Title must be at least 2 characters",
+  "validTitleTooLong": "Title must be less than 50 characters",
+  "validAmountRequired": "Please enter an amount",
+  "validAmountInvalid": "Please enter a valid number",
+  "validAmountNegative": "Amount must be greater than 0",
+  "validAmountTooLarge": "Amount must be less than 1,000,000",
+  "validCategoryRequired": "Please select a category",
+
+  "saveFailed": "Could not save expense. Please try again.",
+  "expenseSaved": "Expense saved successfully!",
+  "expenseUpdated": "Expense updated successfully!"
+}

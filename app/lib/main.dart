@@ -2,9 +2,13 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'l10n/generated/app_localizations.dart';
 import 'models/expense.dart';
 import 'services/database_service.dart';
+import 'services/preferences_service.dart';
 import 'screens/add_expense_screen.dart';
 import 'theme/app_theme.dart';
 import 'utils/currency.dart';
@@ -25,11 +29,34 @@ void main() async {
     initDatabaseFactory();
   }
 
+  await PreferencesService().init();
+
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  final _prefs = PreferencesService();
+
+  @override
+  void initState() {
+    super.initState();
+    _prefs.addListener(_onPrefsChanged);
+  }
+
+  @override
+  void dispose() {
+    _prefs.removeListener(_onPrefsChanged);
+    super.dispose();
+  }
+
+  void _onPrefsChanged() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +64,16 @@ class MainApp extends StatelessWidget {
       title: 'Mapa Money',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: _prefs.themeMode,
+      locale: Locale(_prefs.languageCode),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
       scrollBehavior: const _NoStretchScrollBehavior(),
       home: const HomeScreen(),
     );
@@ -72,12 +109,26 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   bool _hasError = false;
   DateTime _selectedMonth = DateTime.now();
+  final _prefs = PreferencesService();
 
   @override
   void initState() {
     super.initState();
+    _prefs.addListener(_onPrefsChanged);
     _loadExpenses();
+    // Pre-cache the drawer logo so it is ready before the drawer first opens.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(const AssetImage('assets/icons/app_icon.png'), context);
+    });
   }
+
+  @override
+  void dispose() {
+    _prefs.removeListener(_onPrefsChanged);
+    super.dispose();
+  }
+
+  void _onPrefsChanged() => setState(() {});
 
   Future<void> _loadExpenses() async {
     setState(() {
@@ -156,21 +207,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _deleteExpense(Expense expense) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Expense'),
-        content: Text('Are you sure you want to delete "${expense.title}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          title: Text(l10n.homeDeleteTitle),
+          content: Text(l10n.homeDeleteBody(expense.title)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: Text(l10n.delete),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed == true) {
@@ -178,7 +232,9 @@ class _HomeScreenState extends State<HomeScreen> {
       await _loadExpenses();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Expense deleted successfully')),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).homeDeleteSuccess),
+          ),
         );
       }
     }
@@ -198,8 +254,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toString();
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Mapa Money')),
+      appBar: AppBar(title: Text(l10n.appTitle)),
       drawer: const AppDrawer(),
 
       body: Builder(
@@ -216,12 +275,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'Could not load expenses',
+                    l10n.homeLoadError,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Something went wrong. Please restart the app.',
+                  Text(
+                    l10n.homeLoadErrorBody,
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -242,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.06),
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.25),
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
@@ -255,33 +314,33 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.chevron_left,
-                            color: AppColors.primary,
+                            color: colorScheme.primary,
                           ),
                           onPressed: _canGoPreviousMonth()
                               ? _previousMonth
                               : null,
-                          tooltip: 'Previous month',
+                          tooltip: l10n.homePreviousMonth,
                         ),
                         GestureDetector(
                           onTap: () => _selectMonth(context),
                           child: Text(
-                            '${_getMonthName(_selectedMonth.month)} ${_selectedMonth.year}',
-                            style: const TextStyle(
+                            DateFormat('MMMM y', locale).format(_selectedMonth),
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+                              color: colorScheme.primary,
                             ),
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.chevron_right,
-                            color: AppColors.primary,
+                            color: colorScheme.primary,
                           ),
                           onPressed: _canGoNextMonth() ? _nextMonth : null,
-                          tooltip: 'Next month',
+                          tooltip: l10n.homeNextMonth,
                         ),
                       ],
                     ),
@@ -290,11 +349,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.08),
+                            color: Colors.black.withValues(alpha: 0.08),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -303,19 +362,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Total Expenses',
-                            style: TextStyle(
+                          Text(
+                            l10n.homeTotal,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           Text(
                             CurrencyFormatter.format(total),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+                              color: colorScheme.primary,
                             ),
                           ),
                         ],
@@ -396,26 +455,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: filteredExpenses.isEmpty
                     ? Center(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.receipt_long,
-                              size: 80,
-                              color: Colors.grey[400],
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.receipt_long,
+                            size: 80,
+                            color: colorScheme.outline,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            l10n.homeNoExpensesForMonth(
+                              DateFormat('MMMM', locale).format(_selectedMonth),
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No expenses for ${_getMonthName(_selectedMonth.month)}',
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Tap the + button to add your first expense',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.homeTapToAdd,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                       )
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -463,7 +524,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     '${expense.date.day}/${expense.date.month}/${expense.date.year}',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.grey[600],
+                                      color: colorScheme.outline,
                                     ),
                                   ),
                                 ],
@@ -488,29 +549,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                       }
                                     },
                                     itemBuilder: (context) => [
-                                      const PopupMenuItem(
+                                      PopupMenuItem(
                                         value: 'edit',
                                         child: Row(
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.edit,
                                               color: AppColors.primary,
                                             ),
-                                            SizedBox(width: 8),
-                                            Text('Edit'),
+                                            const SizedBox(width: 8),
+                                            Text(l10n.edit),
                                           ],
                                         ),
                                       ),
-                                      const PopupMenuItem(
+                                      PopupMenuItem(
                                         value: 'delete',
                                         child: Row(
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.delete,
                                               color: Colors.red,
                                             ),
-                                            SizedBox(width: 8),
-                                            Text('Delete'),
+                                            const SizedBox(width: 8),
+                                            Text(l10n.delete),
                                           ],
                                         ),
                                       ),
@@ -538,27 +599,9 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         icon: const Icon(Icons.add),
-        label: const Text('Add Expense'),
+        label: Text(l10n.homeAddExpense),
       ),
     );
-  }
-
-  String _getMonthName(int month) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return months[month - 1];
   }
 
   Color _getCategoryColor(String category) => AppColors.categoryColor(category);

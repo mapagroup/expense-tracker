@@ -1,8 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mapa_money/services/preferences_service.dart';
 import 'package:mapa_money/utils/currency.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('CurrencyFormatter', () {
+    setUpAll(() async {
+      SharedPreferences.setMockInitialValues({});
+      await PreferencesService().init();
+    });
     test('formats zero correctly', () {
       expect(CurrencyFormatter.format(0), equals('₹0.00'));
     });

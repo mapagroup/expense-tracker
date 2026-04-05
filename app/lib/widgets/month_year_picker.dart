@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../l10n/generated/app_localizations.dart';
 
 /// A dialog that lets the user pick a month and year.
 /// Returns a [DateTime] set to the first day of the chosen month,
@@ -40,20 +42,10 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
   bool _showingYearPicker = false;
   ScrollController? _yearScrollController;
 
-  static const List<String> _monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
+  String _monthAbbr(int month) {
+    final locale = Localizations.localeOf(context).toString();
+    return DateFormat('MMM', locale).format(DateTime(2000, month));
+  }
 
   @override
   void initState() {
@@ -220,7 +212,7 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                   padding: EdgeInsets.zero,
                 ),
                 child: Text(
-                  _monthNames[index].substring(0, 3),
+                  _monthAbbr(month),
                   style: const TextStyle(fontSize: 13),
                 ),
               ),
@@ -244,12 +236,12 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         if (!_showingYearPicker)
           ElevatedButton(
             onPressed: _isMonthAllowed(_selectedMonth) ? _confirm : null,
-            child: const Text('Select'),
+            child: Text(AppLocalizations.of(context).select),
           ),
       ],
     );

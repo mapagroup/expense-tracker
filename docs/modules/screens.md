@@ -93,7 +93,35 @@ void dispose() {
 ## PreferencesScreen (`lib/screens/preferences_screen.dart`)
 
 ### What it does
-A placeholder screen reached via the navigation drawer. Currently shows a "Settings will appear here" message. It is a `StatelessWidget` with a standard `AppBar` and centred body.
+A full settings screen reached via the navigation drawer. Organised into three sections rendered as a `ListView`:
 
-New app-level preferences (e.g. currency symbol, theme mode) should be added to this screen.
+| Section | Tiles |
+|---|---|
+| **Display** | Theme, Decimal Places |
+| **Regional** | Currency, Language |
+| **Data Entry** | *(placeholder — no preferences yet)* |
+
+Each tile opens a dialog to change the setting. Changes are persisted immediately via `PreferencesService` (backed by `SharedPreferences`).
+
+### State management
+`_PreferencesScreenState` holds a reference to the `PreferencesService` singleton and registers `_rebuild` as a `ChangeNotifier` listener. When any preference changes, the screen rebuilds so that tile subtitles (showing the current value) stay up to date. The listener is removed in `dispose()`.
+
+### Theme dialog
+Shows `System Default`, `Light`, and `Dark` options in a `RadioGroup<ThemeMode>`. Selecting and confirming calls `PreferencesService().setThemeMode(selected)`. Effect is immediate app-wide because `MainApp` also listens to `PreferencesService`.
+
+### Decimal Places dialog
+Shows options `0`, `1`, `2` using `RadioGroup<int>`. Each option includes an example formatted value (e.g. `1234` for 0 dp). Calls `PreferencesService().setDecimalPlaces(selected)`.
+
+### Currency picker
+`_CurrencyPickerDialog` — a private `StatefulWidget` with a search `TextField` that filters `CurrencyOption.kAll` (35 currencies) by name, symbol, or code. Confirmed selection calls `PreferencesService().setCurrencyCode(selected.code)`.
+
+### Language dialog
+Shows 9 languages (each with its native name and English name) using `RadioGroup<String>`. On confirm, calls `PreferencesService().setLanguageCode(selected)` then shows a **Restart Required** alert. Language changes take effect on the next app launch.
+
+### Tests
+`test/screens/preferences_screen_test.dart` verifies:
+- AppBar shows "Preferences"
+- All three section headers are rendered (uppercased)
+- All four tiles are present
+- Tapping Theme, Decimal Places, Currency, and Language opens the correct dialog
 

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mapa_money/theme/app_theme.dart';
 
@@ -44,6 +45,20 @@ void main() {
     test('scaffold background is AppColors.background', () {
       final theme = AppTheme.light();
       expect(theme.scaffoldBackgroundColor, AppColors.background);
+    });
+  });
+
+  group('AppTheme.dark', () {
+    setUpAll(TestWidgetsFlutterBinding.ensureInitialized);
+
+    test('returns a ThemeData with Material 3 enabled', () {
+      final theme = AppTheme.dark();
+      expect(theme.useMaterial3, isTrue);
+    });
+
+    test('brightness is dark', () {
+      final theme = AppTheme.dark();
+      expect(theme.colorScheme.brightness, Brightness.dark);
     });
   });
 }
