@@ -27,15 +27,15 @@ jobs:
         id: flutter-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: /opt/flutter
+          path: ${{ runner.temp }}/flutter
           key: flutter-stable-${{ runner.os }}
 
       - name: Install Flutter SDK
         if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter
+        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
 
       - name: Add Flutter to PATH
-        run: echo "/opt/flutter/bin" >> $GITHUB_PATH
+        run: echo "${{ runner.temp }}/flutter/bin" >> $GITHUB_PATH
 
       - name: Cache pub dependencies
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -69,15 +69,15 @@ jobs:
         id: flutter-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: /opt/flutter
+          path: ${{ runner.temp }}/flutter
           key: flutter-stable-${{ runner.os }}
 
       - name: Install Flutter SDK
         if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter
+        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
 
       - name: Add Flutter to PATH
-        run: echo "/opt/flutter/bin" >> $GITHUB_PATH
+        run: echo "${{ runner.temp }}/flutter/bin" >> $GITHUB_PATH
 
       - name: Cache pub dependencies
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -120,15 +120,15 @@ jobs:
         id: flutter-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: /opt/flutter
+          path: ${{ runner.temp }}/flutter
           key: flutter-stable-${{ runner.os }}
 
       - name: Install Flutter SDK
         if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter
+        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
 
       - name: Add Flutter to PATH
-        run: echo "/opt/flutter/bin" >> $GITHUB_PATH
+        run: echo "${{ runner.temp }}/flutter/bin" >> $GITHUB_PATH
 
       - name: Cache pub dependencies
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -171,15 +171,15 @@ jobs:
         id: flutter-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: /opt/flutter
+          path: ${{ runner.temp }}/flutter
           key: flutter-stable-${{ runner.os }}
 
       - name: Install Flutter SDK
         if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter
+        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
 
       - name: Add Flutter to PATH
-        run: echo "/opt/flutter/bin" >> $GITHUB_PATH
+        run: echo "${{ runner.temp }}/flutter/bin" >> $GITHUB_PATH
 
       - name: Cache pub dependencies
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
