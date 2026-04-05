@@ -21,14 +21,14 @@ void main() {
   group('AppDrawer', () {
     testWidgets('hamburger icon is shown in the AppBar', (tester) async {
       await tester.pumpWidget(buildHarness());
-      // Scaffold automatically adds a DrawerButton (hamburger) when a drawer
-      // is present.
-      expect(find.byIcon(Icons.menu), findsOneWidget);
+      // Scaffold automatically adds a DrawerButton when a drawer is present.
+      // Asserting on the widget type is more robust than a specific icon glyph.
+      expect(find.byType(DrawerButton), findsOneWidget);
     });
 
     testWidgets('tapping hamburger opens the drawer', (tester) async {
       await tester.pumpWidget(buildHarness());
-      await tester.tap(find.byIcon(Icons.menu));
+      await tester.tap(find.byType(DrawerButton));
       await tester.pumpAndSettle();
 
       expect(find.text('Mapa Money'), findsWidgets);
@@ -37,7 +37,7 @@ void main() {
 
     testWidgets('drawer contains Preferences list tile', (tester) async {
       await tester.pumpWidget(buildHarness());
-      await tester.tap(find.byIcon(Icons.menu));
+      await tester.tap(find.byType(DrawerButton));
       await tester.pumpAndSettle();
 
       expect(
@@ -51,7 +51,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(buildHarness());
-      await tester.tap(find.byIcon(Icons.menu));
+      await tester.tap(find.byType(DrawerButton));
       await tester.pumpAndSettle();
 
       await tester.tap(find.widgetWithText(ListTile, 'Preferences'));
@@ -62,7 +62,7 @@ void main() {
 
     testWidgets('drawer can be dismissed by tapping outside', (tester) async {
       await tester.pumpWidget(buildHarness());
-      await tester.tap(find.byIcon(Icons.menu));
+      await tester.tap(find.byType(DrawerButton));
       await tester.pumpAndSettle();
 
       // Close via ScaffoldState — mirrors what Flutter does when the user taps

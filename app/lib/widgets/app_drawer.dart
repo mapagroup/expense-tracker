@@ -29,16 +29,18 @@ class AppDrawer extends StatelessWidget {
               Text(
                 'Mapa Money',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 'Your offline expense tracker',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Colors.white70),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onPrimary.withValues(alpha: 0.7),
+                ),
               ),
             ],
           ),
@@ -47,11 +49,13 @@ class AppDrawer extends StatelessWidget {
           leading: const Icon(Icons.settings_outlined),
           title: const Text('Preferences'),
           onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const PreferencesScreen(),
+            final navigator = Navigator.of(context);
+            navigator.pop();
+            Future.microtask(
+              () => navigator.push(
+                MaterialPageRoute(
+                  builder: (context) => const PreferencesScreen(),
+                ),
               ),
             );
           },

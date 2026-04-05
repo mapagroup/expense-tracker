@@ -23,10 +23,11 @@ The drawer contains:
 
 ### State management
 Uses plain `StatefulWidget` + `setState`. The state consists of:
-- `_expensesFuture` — the `Future` returned by `DatabaseService().getAllExpenses()`
+- `_allExpenses` — `List<Expense>` loaded from the database
+- `_isLoading` — `bool` flag shown while the DB query is in-flight
 - `_selectedMonth` — the month currently being filtered
 
-There is no global state or state management library. When data changes (add/edit/delete), the future is simply replaced with a fresh DB query and `setState` triggers a rebuild.
+There is no global state or state management library. When data changes (add/edit/delete), `_loadExpenses()` is called, which sets `_isLoading = true`, awaits `DatabaseService().getAllExpenses()`, then calls `setState` with the fresh list.
 
 ### Month filtering
 Filtering is done **in-memory** after loading all expenses:
