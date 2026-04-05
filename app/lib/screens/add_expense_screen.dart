@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/expense.dart';
 import '../services/database_service.dart';
+import '../services/preferences_service.dart';
 import '../theme/app_theme.dart';
 
 class AddExpenseScreen extends StatefulWidget {
@@ -99,8 +101,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           SnackBar(
             content: Text(
               widget.expense != null
-                  ? 'Expense updated successfully!'
-                  : 'Expense saved successfully!',
+                  ? AppLocalizations.of(context).expenseUpdated
+                  : AppLocalizations.of(context).expenseSaved,
             ),
           ),
         );
@@ -116,8 +118,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       }());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not save expense. Please try again.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).saveFailed),
           ),
         );
       }
@@ -130,9 +132,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final symbol = PreferencesService().currentCurrency.symbol;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.expense != null ? 'Edit Expense' : 'Add Expense'),
+        title: Text(
+          widget.expense != null ? l10n.editExpenseTitle : l10n.addExpenseTitle,
+        ),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -146,8 +152,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: 'Expense Title',
-                  hintText: 'e.g., Lunch at restaurant',
+                  labelText: l10n.fieldExpenseTitle,
+                  hintText: l10n.fieldExpenseTitleHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -155,13 +161,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter an expense title';
+                    return l10n.validTitleRequired;
                   }
                   if (value.trim().length < 2) {
-                    return 'Title must be at least 2 characters';
+                    return l10n.validTitleTooShort;
                   }
                   if (value.trim().length > 50) {
-                    return 'Title must be less than 50 characters';
+                    return l10n.validTitleTooLong;
                   }
                   return null;
                 },
@@ -172,29 +178,33 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               TextFormField(
                 controller: _amountController,
                 decoration: InputDecoration(
-                  labelText: 'Amount (₹)',
-                  hintText: '0.00',
+                  labelText: l10n.fieldAmountLabel,
+                  hintText: l10n.fieldAmountHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  prefixIcon: const Icon(Icons.currency_rupee),
+                  prefixText: '$symbol ',
+                  prefixStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter an amount';
+                    return l10n.validAmountRequired;
                   }
                   final amount = double.tryParse(value);
                   if (amount == null) {
-                    return 'Please enter a valid number';
+                    return l10n.validAmountInvalid;
                   }
                   if (amount <= 0) {
-                    return 'Amount must be greater than 0';
+                    return l10n.validAmountNegative;
                   }
                   if (amount > 1000000) {
-                    return 'Amount must be less than 1,000,000';
+                    return l10n.validAmountTooLarge;
                   }
                   return null;
                 },
@@ -205,7 +215,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategory,
                 decoration: InputDecoration(
-                  labelText: 'Category',
+                  labelText: l10n.fieldCategory,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -228,7 +238,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 }).toList(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select a category';
+                    return l10n.validCategoryRequired;
                   }
                   return null;
                 },
@@ -270,8 +280,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               TextFormField(
                 controller: _descriptionController,
                 decoration: InputDecoration(
-                  labelText: 'Description (Optional)',
-                  hintText: 'Add any additional notes...',
+                  labelText: l10n.fieldDescription,
+                  hintText: l10n.fieldDescriptionHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -298,8 +308,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         )
                       : Text(
                           widget.expense != null
-                              ? 'Update Expense'
-                              : 'Save Expense',
+                              ? l10n.editExpenseTitle
+                              : l10n.addExpenseTitle,
                         ),
                 ),
               ),

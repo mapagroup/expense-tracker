@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mapa_money/l10n/generated/app_localizations.dart';
 import 'package:mapa_money/screens/preferences_screen.dart';
+import 'package:mapa_money/services/preferences_service.dart';
 import 'package:mapa_money/theme/app_theme.dart';
 import 'package:mapa_money/widgets/app_drawer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Harness that wraps the real [AppDrawer] production widget in a minimal
 /// Scaffold so tests exercise the same widget tree as the app.
 Widget buildHarness() {
   return MaterialApp(
     theme: AppTheme.light(),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
       appBar: AppBar(),
       drawer: const AppDrawer(),
@@ -18,6 +23,11 @@ Widget buildHarness() {
 }
 
 void main() {
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    await PreferencesService().init();
+  });
+
   group('AppDrawer', () {
     testWidgets('hamburger icon is shown in the AppBar', (tester) async {
       await tester.pumpWidget(buildHarness());

@@ -1,0 +1,72 @@
+﻿{
+  "@@locale": "hi",
+
+  "appTitle": "मापा मनी",
+  "appTagline": "आपका ऑफ़लाइन खर्च ट्रैकर",
+
+  "cancel": "रद्द करें",
+  "delete": "हटाएं",
+  "edit": "संपादित करें",
+  "ok": "ठीक है",
+  "save": "सहेजें",
+  "saving": "सहेजा जा रहा है",
+  "select": "चुनें",
+
+  "preferences": "प्राथमिकताएं",
+  "prefSectionDisplay": "डिस्प्ले",
+  "prefSectionRegional": "क्षेत्रीय",
+  "prefSectionDataEntry": "डेटा प्रविष्टि",
+  "prefTheme": "थीम",
+  "prefThemeDefault": "डिफ़ॉल्ट",
+  "prefThemeDark": "डार्क",
+  "prefDecimalPlaces": "दशमलव स्थान",
+  "prefCurrency": "मुद्रा",
+  "prefLanguage": "भाषा",
+  "prefDataEntryEmpty": "अभी तक कोई डेटा प्रविष्टि प्राथमिकता नहीं।",
+  "searchCurrencies": "मुद्राएं खोजें\u2026",
+
+  "homeTotal": "कुल खर्च",
+  "homeAddExpense": "खर्च जोड़ें",
+  "homeNoExpensesForMonth": "{month} के लिए कोई खर्च नहीं",
+  "@homeNoExpensesForMonth": {
+    "placeholders": {
+      "month": {"type": "String"}
+    }
+  },
+  "homeTapToAdd": "पहला खर्च जोड़ने के लिए + बटन दबाएं",
+  "homeLoadError": "खर्च लोड नहीं हो सके",
+  "homeLoadErrorBody": "कुछ गड़बड़ हो गई। कृपया ऐप पुनः आरंभ करें।",
+  "homePreviousMonth": "पिछला महीना",
+  "homeNextMonth": "अगला महीना",
+  "homeDeleteTitle": "खर्च हटाएं",
+  "homeDeleteBody": "क्या आप \"{title}\" हटाना चाहते हैं?",
+  "@homeDeleteBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "homeDeleteSuccess": "खर्च सफलतापूर्वक हटाया गया",
+
+  "addExpenseTitle": "खर्च जोड़ें",
+  "editExpenseTitle": "खर्च संपादित करें",
+  "fieldExpenseTitle": "खर्च का शीर्षक",
+  "fieldExpenseTitleHint": "जैसे, रेस्टोरेंट में दोपहर का खाना",
+  "fieldAmountLabel": "राशि",
+  "fieldAmountHint": "0.00",
+  "fieldCategory": "श्रेणी",
+  "fieldDescription": "विवरण (वैकल्पिक)",
+  "fieldDescriptionHint": "कोई अतिरिक्त नोट जोड़ें\u2026",
+
+  "validTitleRequired": "कृपया खर्च का शीर्षक दर्ज करें",
+  "validTitleTooShort": "शीर्षक कम से कम 2 अक्षरों का होना चाहिए",
+  "validTitleTooLong": "शीर्षक 50 अक्षरों से कम होना चाहिए",
+  "validAmountRequired": "कृपया राशि दर्ज करें",
+  "validAmountInvalid": "कृपया एक वैध संख्या दर्ज करें",
+  "validAmountNegative": "राशि 0 से अधिक होनी चाहिए",
+  "validAmountTooLarge": "राशि 10,00,000 से कम होनी चाहिए",
+  "validCategoryRequired": "कृपया एक श्रेणी चुनें",
+
+  "saveFailed": "खर्च सहेजा नहीं जा सका। कृपया पुनः प्रयास करें।",
+  "expenseSaved": "खर्च सफलतापूर्वक सहेजा गया!",
+  "expenseUpdated": "खर्च सफलतापूर्वक अपडेट किया गया!"
+}

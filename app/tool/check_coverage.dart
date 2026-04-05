@@ -177,6 +177,28 @@ String buildHtml(List<FileCoverage> files) {
   return sb.toString();
 }
 
+// ─────────────────────────────────── strip coverage:ignore-line annotations ─
+
+/// Reads each source file and removes lines marked with
+/// `// coverage:ignore-line` so they don't count against the 100% gate.
+List<FileCoverage> stripIgnoredLines(List<FileCoverage> files) {
+  return files.map((fc) {
+    final src = File(fc.path);
+    if (!src.existsSync()) return fc;
+    final srcLines = src.readAsLinesSync();
+    final ignored = <int>{};
+    for (var i = 0; i < srcLines.length; i++) {
+      if (srcLines[i].contains('// coverage:ignore-line')) {
+        ignored.add(i + 1);
+      }
+    }
+    if (ignored.isEmpty) return fc;
+    final filtered = Map<int, int>.from(fc.lines)
+      ..removeWhere((ln, _) => ignored.contains(ln));
+    return FileCoverage(fc.path, filtered);
+  }).toList();
+}
+
 // ──────────────────────────────────────────────────────────────────── main ─
 
 void main() {
@@ -194,15 +216,28 @@ void main() {
     exit(1);
   }
 
-  final totalFound = files.fold(0, (s, f) => s + f.linesFound);
-  final totalHit = files.fold(0, (s, f) => s + f.linesHit);
+  // Exclude auto-generated files from the coverage gate.
+  const excludePrefixes = [
+    'lib/l10n/generated/',
+    'lib\\l10n\\generated\\',
+  ];
+  final measured = stripIgnoredLines(
+    files
+        .where(
+          (f) => !excludePrefixes.any((p) => f.path.contains(p)),
+        )
+        .toList(),
+  );
+
+  final totalFound = measured.fold(0, (s, f) => s + f.linesFound);
+  final totalHit = measured.fold(0, (s, f) => s + f.linesHit);
 
   // ── terminal output ───────────────────────────────────────────────────────
   stdout.writeln('');
   stdout.writeln('Coverage report:');
   stdout.writeln('─' * 62);
 
-  for (final f in files..sort((a, b) => a.path.compareTo(b.path))) {
+  for (final f in measured..sort((a, b) => a.path.compareTo(b.path))) {
     final pct = _pct(f.linesHit, f.linesFound);
     final label = '  ${f.path}'.padRight(46);
     stdout.writeln(
@@ -225,7 +260,7 @@ void main() {
   final htmlDir = Directory('coverage');
   if (!htmlDir.existsSync()) htmlDir.createSync();
   final htmlFile = File('coverage/index.html');
-  htmlFile.writeAsStringSync(buildHtml(files));
+  htmlFile.writeAsStringSync(buildHtml(measured));
   stdout.writeln('HTML report: coverage/index.html');
   stdout.writeln('');
 

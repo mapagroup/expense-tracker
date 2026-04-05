@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../screens/preferences_screen.dart';
 import '../theme/app_theme.dart';
 
@@ -33,17 +34,15 @@ class AppDrawer extends StatelessWidget {
               Text(
                 'Mapa Money',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                'Your offline expense tracker',
+                AppLocalizations.of(context).appTagline,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onPrimary.withValues(alpha: 0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -51,7 +50,7 @@ class AppDrawer extends StatelessWidget {
         ),
         ListTile(
           leading: const Icon(Icons.settings_outlined),
-          title: const Text('Preferences'),
+          title: Text(AppLocalizations.of(context).preferences),
           onTap: () {
             final navigator = Navigator.of(context);
             navigator.pop();

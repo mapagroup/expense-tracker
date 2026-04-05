@@ -4,28 +4,30 @@ Three small utility files that handle cross-cutting concerns: currency formattin
 
 ---
 
-## `currency.dart` — INR Formatter
+## `currency.dart` — Dynamic Currency Formatter
 
 ### Purpose
-A single, consistent way to format a `double` as an Indian Rupee string throughout the entire app.
+A single, consistent way to format a `double` as a currency string throughout the entire app. The symbol, decimal precision, and grouping are all read from `PreferencesService` at call time, so they reflect whatever the user has chosen.
 
 ### Usage
 ```dart
-CurrencyFormatter.format(1234.5)   // → "₹1,234.50"
-CurrencyFormatter.format(100000)   // → "₹1,00,000.00"  (Indian lakh grouping)
+CurrencyFormatter.format(1234.5)   // → "₹1,234.50"  (default: INR, 2 dp)
+CurrencyFormatter.format(100)      // → "₹100.00"
 CurrencyFormatter.format(0)        // → "₹0.00"
 ```
 
-### Implementation detail
-Uses Dart's `intl` package with `locale: 'en_IN'`. The `en_IN` locale applies **Indian number grouping** (lakh/crore system):
-- First separator at 3 digits from the right: `1,000`
-- Subsequent separators every 2 digits: `1,00,000` (one lakh), `1,00,00,000` (one crore)
+The output symbol and decimal places change automatically when the user updates those preferences — no restart needed.
 
-### Why a class instead of a plain function?
-The `NumberFormat` object is expensive to create. Making it a `static final` field means it is created **once** and reused for every call, which is important when rendering a long list of expenses.
+### Implementation detail
+Creates a `NumberFormat.currency` instance on every call using:
+- `locale: 'en_US'` — Western grouping (thousands separator at every 3 digits)
+- `symbol` — from `PreferencesService().currentCurrency.symbol`
+- `decimalDigits` — from `PreferencesService().decimalPlaces`
+
+The `en_US` locale is used (rather than `en_IN`) so the grouping works correctly for all currencies, not just INR with lakh/crore grouping.
 
 ### Tests
-`test/utils/currency_test.dart` verifies zero, whole numbers, decimals, lakh grouping, and negative amounts.
+`test/utils/currency_test.dart` verifies zero, whole numbers, decimals, large numbers, and negative amounts. The test `setUp` calls `SharedPreferences.setMockInitialValues({})` + `PreferencesService().init()` to ensure default settings (INR, 2 dp) are active for every test.
 
 ---
 

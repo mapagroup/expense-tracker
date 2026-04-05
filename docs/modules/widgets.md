@@ -39,6 +39,8 @@ Navigation is handled by capturing the `NavigatorState` before popping the drawe
 - Tapping Preferences navigates to `PreferencesScreen`
 - Tapping outside the drawer closes it
 
+All widget tests include `localizationsDelegates` (AppLocalizations + GlobalMaterialLocalizations + GlobalWidgetsLocalizations) and mock `SharedPreferences` setup so that `AppLocalizations.of(context)` and `PreferencesService` resolve correctly.
+
 ---
 
 ## `month_year_picker.dart` — Month & Year Picker Dialog
@@ -84,7 +86,11 @@ The dialog is its own `StatefulWidget` (`_MonthYearPickerDialog`) to keep year/m
 `test/widgets/month_year_picker_test.dart` tests:
 - Dialog opens and shows title text
 - Initial year and month are displayed correctly
-- Month abbreviations are all shown
+- Month abbreviations are all shown (via `DateFormat('MMM', locale)` — respects app locale)
 - Selecting a month and confirming returns the correct `DateTime`
 - Cancel returns `null`
 - Boundary months are disabled correctly
+- Year picker opens, selects year, returns to month picker
+- Year changes clamp the selected month to stay within `[firstDate, lastDate]`
+
+All tests use `localizationsDelegates` + mocked `SharedPreferences` in `setUpAll`.

@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mapa_money/l10n/generated/app_localizations.dart';
+import 'package:mapa_money/services/preferences_service.dart';
 import 'package:mapa_money/widgets/month_year_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    await PreferencesService().init();
+  });
+
   group('MonthYearPicker dialog', () {
     Future<void> openPicker(
       WidgetTester tester, {
@@ -11,6 +20,12 @@ void main() {
       final date = initialDate ?? DateTime(2025, 6);
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () => showMonthYearPicker(
@@ -77,6 +92,12 @@ void main() {
       DateTime? result;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () async {
@@ -105,6 +126,12 @@ void main() {
       DateTime? result;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () async {
@@ -155,6 +182,12 @@ void main() {
       // (lines 16–17 in month_year_picker.dart).
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () => showMonthYearPicker(
@@ -181,6 +214,12 @@ void main() {
         DateTime? result;
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Builder(
               builder: (context) => ElevatedButton(
                 onPressed: () async {
@@ -217,6 +256,12 @@ void main() {
       DateTime? result;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () async {
@@ -248,6 +293,12 @@ void main() {
       DateTime? result;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () async {
@@ -284,6 +335,12 @@ void main() {
       // not allowed → Select button onPressed must be null.
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () => showMonthYearPicker(
@@ -354,6 +411,12 @@ void main() {
       DateTime? result;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () async {
@@ -391,6 +454,12 @@ void main() {
         DateTime? result;
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Builder(
               builder: (context) => ElevatedButton(
                 onPressed: () async {
@@ -427,6 +496,12 @@ void main() {
       DateTime? result;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () async {
@@ -458,6 +533,12 @@ void main() {
       DateTime? result;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () async {
