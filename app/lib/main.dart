@@ -80,7 +80,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadExpenses() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       final expenses = await DatabaseService().getAllExpenses();
       if (mounted) {

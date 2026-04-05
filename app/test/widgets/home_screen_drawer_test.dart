@@ -60,18 +60,19 @@ void main() {
       expect(find.byType(PreferencesScreen), findsOneWidget);
     });
 
-    testWidgets('drawer can be dismissed by tapping outside', (tester) async {
+    testWidgets('tapping outside the drawer closes it', (tester) async {
       await tester.pumpWidget(buildHarness());
       await tester.tap(find.byType(DrawerButton));
       await tester.pumpAndSettle();
 
-      // Close via ScaffoldState — mirrors what Flutter does when the user taps
-      // the scrim, and avoids brittle hard-coded coordinates or hit-test
-      // issues with NavigationDrawer's internal barrier widget.
-      final ScaffoldState scaffold = tester.state(find.byType(Scaffold));
-      scaffold.closeDrawer();
+      // Tap the scrim to simulate the user tapping outside the open drawer.
+      // Flutter's test viewport is 800 × 600 logical pixels; the Material
+      // drawer panel is at most 304 px wide on the left, so (600, 300)
+      // reliably lands on the scrim GestureDetector, which calls closeDrawer.
+      await tester.tapAt(const Offset(600, 300));
       await tester.pumpAndSettle();
 
+      final ScaffoldState scaffold = tester.state(find.byType(Scaffold));
       expect(scaffold.isDrawerOpen, isFalse);
     });
   });
