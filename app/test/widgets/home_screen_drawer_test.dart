@@ -65,11 +65,15 @@ void main() {
       await tester.tap(find.byType(DrawerButton));
       await tester.pumpAndSettle();
 
-      // Tap the scrim to simulate the user tapping outside the open drawer.
-      // Flutter's test viewport is 800 × 600 logical pixels; the Material
-      // drawer panel is at most 304 px wide on the left, so (600, 300)
-      // reliably lands on the scrim GestureDetector, which calls closeDrawer.
-      await tester.tapAt(const Offset(600, 300));
+      // Derive the tap target from the rendered layout so the test remains
+      // stable if the viewport size or drawer width changes.
+      final Rect scaffoldRect = tester.getRect(find.byType(Scaffold));
+      final Rect drawerRect = tester.getRect(find.byType(Drawer));
+      final double scrimDx =
+          drawerRect.right + ((scaffoldRect.right - drawerRect.right) / 2);
+      final Offset scrimTap = Offset(scrimDx, scaffoldRect.center.dy);
+
+      await tester.tapAt(scrimTap);
       await tester.pumpAndSettle();
 
       final ScaffoldState scaffold = tester.state(find.byType(Scaffold));
