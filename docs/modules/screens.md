@@ -14,12 +14,8 @@ The main screen the user sees on launch. Shows:
 - A FAB (floating action button) to add a new expense
 - A hamburger icon (☰) in the AppBar that opens a side drawer
 
-### Navigation drawer (`AppDrawer`)
-`AppDrawer` is a public `StatelessWidget` in `lib/widgets/app_drawer.dart` that renders as a `NavigationDrawer`. `HomeScreen` injects it into `Scaffold.drawer`. Flutter's `Scaffold` automatically adds the hamburger `DrawerButton` to the `AppBar` when a drawer is present.
-
-The drawer contains:
-- A `DrawerHeader` with the app icon (`assets/icons/app_icon.png`) and app name
-- A **Preferences** `ListTile` that closes the drawer and pushes `PreferencesScreen`
+### Navigation
+The screen exposes app-level navigation through the side drawer (`AppDrawer`). From here, the user can open `PreferencesScreen`. See [`docs/modules/widgets.md`](widgets.md) for the `AppDrawer` widget documentation.
 
 ### State management
 Uses plain `StatefulWidget` + `setState`. The state consists of:

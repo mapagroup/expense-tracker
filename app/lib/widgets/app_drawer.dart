@@ -23,6 +23,8 @@ class AppDrawer extends StatelessWidget {
                 'assets/icons/app_icon.png',
                 width: 48,
                 height: 48,
+                cacheWidth: 48,
+                cacheHeight: 48,
                 excludeFromSemantics: true,
               ),
               const SizedBox(height: 12),
