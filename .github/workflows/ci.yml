@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FLUTTER_VERSION: '3.41.6'
+
 jobs:
   # ──────────────────────────────────────────────
   # 1. Lint & Format
@@ -28,11 +31,11 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ${{ runner.temp }}/flutter
-          key: flutter-3.41.6-${{ runner.os }}
+          key: flutter-${{ env.FLUTTER_VERSION }}-${{ runner.os }}
 
       - name: Install Flutter SDK
         if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: git clone --depth 1 --branch 3.41.6 https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
+        run: git clone --depth 1 --branch ${{ env.FLUTTER_VERSION }} https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
 
       - name: Add Flutter to PATH
         run: echo "${{ runner.temp }}/flutter/bin" >> $GITHUB_PATH
@@ -70,11 +73,11 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ${{ runner.temp }}/flutter
-          key: flutter-3.41.6-${{ runner.os }}
+          key: flutter-${{ env.FLUTTER_VERSION }}-${{ runner.os }}
 
       - name: Install Flutter SDK
         if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: git clone --depth 1 --branch 3.41.6 https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
+        run: git clone --depth 1 --branch ${{ env.FLUTTER_VERSION }} https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
 
       - name: Add Flutter to PATH
         run: echo "${{ runner.temp }}/flutter/bin" >> $GITHUB_PATH
@@ -121,11 +124,11 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ${{ runner.temp }}/flutter
-          key: flutter-3.41.6-${{ runner.os }}
+          key: flutter-${{ env.FLUTTER_VERSION }}-${{ runner.os }}
 
       - name: Install Flutter SDK
         if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: git clone --depth 1 --branch 3.41.6 https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
+        run: git clone --depth 1 --branch ${{ env.FLUTTER_VERSION }} https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
 
       - name: Add Flutter to PATH
         run: echo "${{ runner.temp }}/flutter/bin" >> $GITHUB_PATH
@@ -172,11 +175,11 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ${{ runner.temp }}/flutter
-          key: flutter-3.41.6-${{ runner.os }}
+          key: flutter-${{ env.FLUTTER_VERSION }}-${{ runner.os }}
 
       - name: Install Flutter SDK
         if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: git clone --depth 1 --branch 3.41.6 https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
+        run: git clone --depth 1 --branch ${{ env.FLUTTER_VERSION }} https://github.com/flutter/flutter.git "${{ runner.temp }}/flutter"
 
       - name: Add Flutter to PATH
         run: echo "${{ runner.temp }}/flutter/bin" >> $GITHUB_PATH
