@@ -22,7 +22,7 @@ class AppDrawer extends StatelessWidget {
 The drawer contains two sections:
 
 **1. Header (`DrawerHeader`)**
-Displays the app icon (`assets/icons/app_icon.png`, decoded at 48×48 via `cacheWidth`/`cacheHeight`) and the app name/tagline. The background uses `AppColors.primary`; text colours derive from `Theme.of(context).colorScheme.onPrimary`.
+Displays the app icon (`assets/icons/app_icon.png`, decoded at `(48 × devicePixelRatio)` physical pixels via `cacheWidth`/`cacheHeight` to avoid blurriness on high-DPI screens while keeping the displayed size at 48 logical pixels) and the app name/tagline. The background uses `AppColors.primary`; text colours derive from `Theme.of(context).colorScheme.onPrimary`.
 
 **2. Navigation entries**
 | Entry | Icon | Destination |
