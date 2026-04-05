@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'models/expense.dart';
 import 'services/database_service.dart';
 import 'screens/add_expense_screen.dart';
+import 'screens/preferences_screen.dart';
 import 'theme/app_theme.dart';
 import 'utils/currency.dart';
 import 'utils/db_init_stub.dart'
@@ -36,8 +37,25 @@ class MainApp extends StatelessWidget {
       title: 'Mapa Money',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      scrollBehavior: const _NoStretchScrollBehavior(),
       home: const HomeScreen(),
     );
+  }
+}
+
+/// Disables the Material 3 stretch-overscroll indicator on all scrollable
+/// widgets. The default [MaterialScrollBehavior] on Android API 31+ renders
+/// a [StretchingOverscrollIndicator] that zooms content at list boundaries.
+class _NoStretchScrollBehavior extends MaterialScrollBehavior {
+  const _NoStretchScrollBehavior();
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return child;
   }
 }
 
@@ -178,6 +196,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Mapa Money')),
+      drawer: _AppDrawer(),
+
       body: Builder(
         builder: (context) {
           if (_isLoading) {
@@ -308,6 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
+                    physics: const ClampingScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: categoryTotals.length,
                     itemBuilder: (context, index) {
@@ -394,6 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       )
                     : ListView.builder(
+                        physics: const ClampingScrollPhysics(),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemCount: filteredExpenses.length,
                         itemBuilder: (context, index) {
@@ -554,5 +576,57 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         return Icons.currency_rupee;
     }
+  }
+}
+
+class _AppDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return NavigationDrawer(
+      children: [
+        DrawerHeader(
+          decoration: const BoxDecoration(color: AppColors.primary),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image.asset(
+                'assets/icons/app_icon.png',
+                width: 48,
+                height: 48,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Mapa Money',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Your offline expense tracker',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white70,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings_outlined),
+          title: const Text('Preferences'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PreferencesScreen(),
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
 }

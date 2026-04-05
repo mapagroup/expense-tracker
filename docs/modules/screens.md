@@ -1,6 +1,6 @@
 # Module: Screens
 
-This app has two screens: **HomeScreen** (in `lib/main.dart`) and **AddExpenseScreen** (in `lib/screens/add_expense_screen.dart`).
+This app has three screens: **HomeScreen** (in `lib/main.dart`), **AddExpenseScreen** (`lib/screens/add_expense_screen.dart`), and **PreferencesScreen** (`lib/screens/preferences_screen.dart`).
 
 ---
 
@@ -12,9 +12,14 @@ The main screen the user sees on launch. Shows:
 - A per-category spending breakdown with percentages
 - A scrollable list of expense tiles for that month
 - A FAB (floating action button) to add a new expense
+- A hamburger icon (☰) in the AppBar that opens a side drawer
 
-### Why it lives in `main.dart`
-It is the only screen that exists at app startup. Keeping the entry point and home screen together reduces the number of files for a simple app. If the app grows (e.g. adds a settings screen), `HomeScreen` should be moved to `screens/home_screen.dart`.
+### Navigation drawer (`_AppDrawer`)
+`_AppDrawer` is a private `StatelessWidget` in `main.dart` that renders as a `NavigationDrawer`. It is injected into `HomeScreen`'s `Scaffold.drawer` property. Flutter's `Scaffold` automatically adds the hamburger `DrawerButton` to the `AppBar` when a drawer is present.
+
+The drawer contains:
+- A `DrawerHeader` with the app icon (`assets/icons/app_icon.png`) and app name
+- A **Preferences** `ListTile` that closes the drawer and pushes `PreferencesScreen`
 
 ### State management
 Uses plain `StatefulWidget` + `setState`. The state consists of:
@@ -84,3 +89,13 @@ void dispose() {
   super.dispose();
 }
 ```
+
+---
+
+## PreferencesScreen (`lib/screens/preferences_screen.dart`)
+
+### What it does
+A placeholder screen reached via the navigation drawer. Currently shows a "Settings will appear here" message. It is a `StatelessWidget` with a standard `AppBar` and centred body.
+
+New app-level preferences (e.g. currency symbol, theme mode) should be added to this screen.
+
