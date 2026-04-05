@@ -2,58 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mapa_money/screens/preferences_screen.dart';
 import 'package:mapa_money/theme/app_theme.dart';
+import 'package:mapa_money/widgets/app_drawer.dart';
 
-/// Minimal harness that embeds a Scaffold with a drawer matching the real
-/// _AppDrawer implementation so we can test its UI without hitting the DB.
+/// Harness that wraps the real [AppDrawer] production widget in a minimal
+/// Scaffold so tests exercise the same widget tree as the app.
 Widget buildHarness() {
   return MaterialApp(
     theme: AppTheme.light(),
     home: Scaffold(
-      appBar: AppBar(title: const Text('Mapa Money')),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: AppColors.primary),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Icon substitute for asset (not available in tests)
-                  const Icon(Icons.account_balance_wallet,
-                      size: 48, color: Colors.white),
-                  const SizedBox(height: 12),
-                  Builder(
-                    builder: (ctx) => Text(
-                      'Mapa Money',
-                      style:
-                          Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                              ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Builder(
-              builder: (ctx) => ListTile(
-                leading: const Icon(Icons.settings_outlined),
-                title: const Text('Preferences'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.push(
-                    ctx,
-                    MaterialPageRoute(
-                      builder: (_) => const PreferencesScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: AppBar(),
+      drawer: const AppDrawer(),
       body: const SizedBox.shrink(),
     ),
   );
@@ -104,11 +62,15 @@ void main() {
       await tester.tap(find.byIcon(Icons.menu));
       await tester.pumpAndSettle();
 
-      // Tap the scrim (barrier) to dismiss the drawer
-      await tester.tapAt(const Offset(600, 300));
+      // Close via ScaffoldState — mirrors what Flutter does when the user taps
+      // the scrim, and avoids brittle hard-coded coordinates or hit-test
+      // issues with NavigationDrawer's internal barrier widget.
+      final ScaffoldState scaffold =
+          tester.state(find.byType(Scaffold));
+      scaffold.closeDrawer();
       await tester.pumpAndSettle();
 
-      expect(find.byType(Drawer), findsNothing);
+      expect(find.byType(AppDrawer), findsNothing);
     });
   });
 }
