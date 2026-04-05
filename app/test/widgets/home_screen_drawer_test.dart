@@ -18,7 +18,7 @@ Widget buildHarness() {
 }
 
 void main() {
-  group('HomeScreen drawer', () {
+  group('AppDrawer', () {
     testWidgets('hamburger icon is shown in the AppBar', (tester) async {
       await tester.pumpWidget(buildHarness());
       // Scaffold automatically adds a DrawerButton (hamburger) when a drawer
@@ -40,13 +40,16 @@ void main() {
       await tester.tap(find.byIcon(Icons.menu));
       await tester.pumpAndSettle();
 
-      expect(find.widgetWithIcon(ListTile, Icons.settings_outlined),
-          findsOneWidget);
+      expect(
+        find.widgetWithIcon(ListTile, Icons.settings_outlined),
+        findsOneWidget,
+      );
       expect(find.widgetWithText(ListTile, 'Preferences'), findsOneWidget);
     });
 
-    testWidgets('tapping Preferences navigates to PreferencesScreen',
-        (tester) async {
+    testWidgets('tapping Preferences navigates to PreferencesScreen', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildHarness());
       await tester.tap(find.byIcon(Icons.menu));
       await tester.pumpAndSettle();
@@ -65,8 +68,7 @@ void main() {
       // Close via ScaffoldState — mirrors what Flutter does when the user taps
       // the scrim, and avoids brittle hard-coded coordinates or hit-test
       // issues with NavigationDrawer's internal barrier widget.
-      final ScaffoldState scaffold =
-          tester.state(find.byType(Scaffold));
+      final ScaffoldState scaffold = tester.state(find.byType(Scaffold));
       scaffold.closeDrawer();
       await tester.pumpAndSettle();
 

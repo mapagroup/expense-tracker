@@ -23,21 +23,22 @@ class AppDrawer extends StatelessWidget {
                 'assets/icons/app_icon.png',
                 width: 48,
                 height: 48,
+                excludeFromSemantics: true,
               ),
               const SizedBox(height: 12),
               Text(
                 'Mapa Money',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 'Your offline expense tracker',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white70,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.white70),
               ),
             ],
           ),

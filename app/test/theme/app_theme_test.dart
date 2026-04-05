@@ -8,10 +8,7 @@ void main() {
     });
 
     test('returns categoryTransport for Transport', () {
-      expect(
-        AppColors.categoryColor('Transport'),
-        AppColors.categoryTransport,
-      );
+      expect(AppColors.categoryColor('Transport'), AppColors.categoryTransport);
     });
 
     test('returns categoryEntertainment for Entertainment', () {
@@ -32,17 +29,19 @@ void main() {
   });
 
   group('AppTheme.light', () {
-    testWidgets('returns a ThemeData with Material 3 enabled', (tester) async {
+    setUpAll(TestWidgetsFlutterBinding.ensureInitialized);
+
+    test('returns a ThemeData with Material 3 enabled', () {
       final theme = AppTheme.light();
       expect(theme.useMaterial3, isTrue);
     });
 
-    testWidgets('has correct primary colour', (tester) async {
+    test('has correct primary colour', () {
       final theme = AppTheme.light();
       expect(theme.colorScheme.primary, AppColors.primary);
     });
 
-    testWidgets('scaffold background is AppColors.background', (tester) async {
+    test('scaffold background is AppColors.background', () {
       final theme = AppTheme.light();
       expect(theme.scaffoldBackgroundColor, AppColors.background);
     });

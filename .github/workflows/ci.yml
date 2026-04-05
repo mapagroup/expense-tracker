@@ -23,18 +23,26 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
+      - name: Cache Flutter SDK
+        id: flutter-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: /opt/flutter
+          key: flutter-stable-${{ runner.os }}
+
+      - name: Install Flutter SDK
+        if: steps.flutter-cache.outputs.cache-hit != 'true'
+        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter
+
+      - name: Add Flutter to PATH
+        run: echo "/opt/flutter/bin" >> $GITHUB_PATH
+
       - name: Cache pub dependencies
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
           restore-keys: pub-${{ runner.os }}-
-
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
-        with:
-          flutter-version: '3.x'
-          channel: stable
-          cache: false
 
       - name: Get dependencies
         run: flutter pub get
@@ -57,18 +65,26 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
+      - name: Cache Flutter SDK
+        id: flutter-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: /opt/flutter
+          key: flutter-stable-${{ runner.os }}
+
+      - name: Install Flutter SDK
+        if: steps.flutter-cache.outputs.cache-hit != 'true'
+        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter
+
+      - name: Add Flutter to PATH
+        run: echo "/opt/flutter/bin" >> $GITHUB_PATH
+
       - name: Cache pub dependencies
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
           restore-keys: pub-${{ runner.os }}-
-
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
-        with:
-          flutter-version: '3.x'
-          channel: stable
-          cache: false
 
       - name: Get dependencies
         run: flutter pub get
@@ -100,18 +116,26 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Cache Flutter SDK
+        id: flutter-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: /opt/flutter
+          key: flutter-stable-${{ runner.os }}
+
+      - name: Install Flutter SDK
+        if: steps.flutter-cache.outputs.cache-hit != 'true'
+        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter
+
+      - name: Add Flutter to PATH
+        run: echo "/opt/flutter/bin" >> $GITHUB_PATH
+
       - name: Cache pub dependencies
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
           restore-keys: pub-${{ runner.os }}-
-
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
-        with:
-          flutter-version: '3.x'
-          channel: stable
-          cache: false
 
       - name: Get dependencies
         run: flutter pub get
@@ -143,18 +167,26 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Cache Flutter SDK
+        id: flutter-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: /opt/flutter
+          key: flutter-stable-${{ runner.os }}
+
+      - name: Install Flutter SDK
+        if: steps.flutter-cache.outputs.cache-hit != 'true'
+        run: git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter
+
+      - name: Add Flutter to PATH
+        run: echo "/opt/flutter/bin" >> $GITHUB_PATH
+
       - name: Cache pub dependencies
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
           restore-keys: pub-${{ runner.os }}-
-
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
-        with:
-          flutter-version: '3.x'
-          channel: stable
-          cache: false
 
       - name: Build for CodeQL
         working-directory: app
